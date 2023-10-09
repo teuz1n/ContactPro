@@ -1,28 +1,19 @@
 <template>
     <div>
-      <v-card>
-        <v-card-title>
-          Contatos
-        </v-card-title>
-        <v-card-text>
-          <v-data-table
-            :items="contacts"
-            :headers="headers"
-          >
-            <template v-slot:item="{ item }">
-              <tr>
-                <td>{{ item.firstName }}</td>
-                <td>{{ item.lastName }}</td>
-             
-                <td>
-                  <v-btn @click="verDetalhes(item)">Ver Detalhes</v-btn>
-                  <v-btn @click="editarContato(item)">Editar</v-btn>
-                </td>
-              </tr>
-            </template>
-          </v-data-table>
-        </v-card-text>
-      </v-card>
+          <v-table>
+            <tr>
+              <th v-for="(item, index) in headers" :key="index">{{item.text}}</th>
+            </tr>
+            <tr v-for="(item, index) in contacts" :key="index">
+              <td>{{ item.firstName }}</td>
+              <td>{{ item.lastName }}</td>
+            
+              <td>
+                <v-btn @click="verDetalhes(item)">Ver Detalhes</v-btn>
+                <v-btn @click="editarContato(item)">Editar</v-btn>
+              </td>
+            </tr>
+          </v-table>
     </div>
   </template>
   
@@ -61,5 +52,8 @@
   </script>
   
   <style scoped>
+  th {
+    text-align: left;
+  }
   </style>
   

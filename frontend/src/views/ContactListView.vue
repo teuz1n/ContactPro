@@ -29,9 +29,9 @@
     },
     methods: {
       fetchContacts() {
-        axios.get('/contacts')
+        axios.get('http://localhost:8000/api/contacts')
           .then((response) => {
-            this.contacts = response.data;
+            this.contacts = response.data.contacts;
           })
           .catch((error) => {
             console.error('Erro ao buscar contatos:', error);
