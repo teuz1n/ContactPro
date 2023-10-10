@@ -2,7 +2,6 @@
     <div>
       <v-card>
         <v-card-title>
-          Contatos
         </v-card-title>
         <v-card-text>
           <contact-list :contacts="contacts"></contact-list>
