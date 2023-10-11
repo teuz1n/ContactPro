@@ -1,6 +1,7 @@
 <template>
     <div>
-      <v-card>
+      <the-navbar></the-navbar>
+      <v-card class="mt-5">
         <v-card-title>
         </v-card-title>
         <v-card-text>
@@ -12,11 +13,13 @@
   
   <script>
   import ContactList from '@/components/ContactList.vue';
+  import TheNavbar from '@/components/TheNavbar.vue';
   import axios from 'axios';
   
   export default {
     components: {
-      'contact-list': ContactList
+      'contact-list': ContactList,
+      'the-navbar': TheNavbar
     },
     data() {
       return {

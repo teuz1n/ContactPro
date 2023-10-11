@@ -1,8 +1,7 @@
 <template>
   <div>
-    <h1 class="mb-7">ContactPro</h1>
-    <v-btn @click="adicionarContato" color="primary" class="mb-4">Criar novo contato</v-btn>
-    <v-btn @click="exibirRelatorio" color="secondary" class="mb-4">Relarório</v-btn>
+    <v-btn @click="adicionarContato" class="custom-primary-button mb-4">Criar novo contato</v-btn>
+    <v-btn @click="exibirRelatorio" class="custom-secondary-button mb-4">Relatório</v-btn>
     <v-table>
       <thead>
         <tr>
@@ -18,10 +17,10 @@
           <td>{{ item.firstName }}</td>
           <td>{{ item.lastName }}</td>
           <td>
-            <v-btn @click="verDetalhes(item)" color="info" small>
+            <v-btn @click="verDetalhes(item)" class="custom-secondary-button" small>
               Ver Detalhes
             </v-btn>
-            <v-btn @click="editarContato(item)" color="primary" small>
+            <v-btn @click="editarContato(item)" class="custom-primary-button" small>
               Editar
             </v-btn>
           </td>
@@ -73,5 +72,15 @@ td {
 
 .v-btn {
   margin-right: 5px;
+}
+
+.custom-primary-button {
+  background-color: #FF9100;
+  color: #fff;
+}
+
+.custom-secondary-button {
+  background-color: #38B6FF;
+  color: #fff;
 }
 </style>
