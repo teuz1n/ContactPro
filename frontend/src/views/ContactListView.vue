@@ -1,45 +1,145 @@
 <template>
-    <div>
-      <the-navbar></the-navbar>
-      <v-card class="mt-5">
-        <v-card-title>
-        </v-card-title>
-        <v-card-text>
-          <contact-list :contacts="contacts"></contact-list>
-        </v-card-text>
-      </v-card>
-    </div>
-  </template>
-  
-  <script>
-  import ContactList from '@/components/ContactList.vue';
-  import TheNavbar from '@/components/TheNavbar.vue';
-  import axios from 'axios';
-  
-  export default {
-    components: {
-      'contact-list': ContactList,
-      'the-navbar': TheNavbar
+  <div>
+    <the-navbar></the-navbar>
+    <v-container fluid>
+      <v-row>
+        <v-col cols="3">
+          <v-card class="elevation-2">
+            <v-card-title class="text-h5">
+              Categorias
+            </v-card-title>
+            <v-list>
+              <v-list-item @click="filterContacts('Todas')">
+                <v-list-item-title>Todas</v-list-item-title>
+              </v-list-item>
+              <v-divider></v-divider>
+              <v-list-item
+                v-for="(category, index) in categories"
+                :key="index"
+                @click="filterContacts(category)"
+              >
+                <v-list-item-title>{{ category }}</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-card>
+        </v-col>
+        <v-col cols="7">
+          <v-btn @click="adicionarContato" class="custom-primary-button mr-4">Criar novo contato</v-btn>
+          <v-btn @click="exibirRelatorio" class="custom-secondary-button mr-4">Relatório</v-btn>
+          <v-table>
+            <thead>
+              <tr>
+                <th>Categoria</th>
+                <th>Nome</th>
+                <th>Sobrenome</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(item, index) in displayedContacts" :key="index">
+                <td class="category-cell">{{ item.category }}</td>
+                <td>{{ item.firstName }}</td>
+                <td>{{ item.lastName }}</td>
+                <td>
+                  <v-btn @click="verDetalhes(item)" class="custom-secondary-button mr-4" small>
+                    Ver Detalhes
+                  </v-btn>
+                  <v-btn @click="editarContato(item)" class="custom-primary-button mr-4" small>
+                    Editar
+                  </v-btn>
+                </td>
+              </tr>
+            </tbody>
+          </v-table>
+        </v-col>
+      </v-row>
+    </v-container>
+  </div>
+</template>
+
+
+<script>
+import TheNavbar from '@/components/TheNavbar.vue';
+import axios from 'axios';
+import { useRouter } from 'vue-router';
+
+
+export default {
+  components: {
+    'the-navbar': TheNavbar
+  },
+  data() {
+    return {
+      contacts: [],
+      categories: [], 
+      selectedCategory: '', 
+    };
+  },
+  created() {
+    this.fetchContacts();
+  },
+  methods: {
+    fetchContacts() {
+      axios.get('http://localhost:8000/api/contacts')
+        .then((response) => {
+          this.contacts = response.data.contacts;
+          this.extractCategories(); 
+        })
+        .catch((error) => {
+          console.error('Erro ao buscar contatos:', error);
+        });
     },
-    data() {
-      return {
-        contacts: [] 
-      };
+    extractCategories() {
+      this.categories = [...new Set(this.contacts.map((contact) => contact.category))];
     },
-    created() {
-      this.fetchContacts(); 
-    },
-    methods: {
-      fetchContacts() {
-        axios.get('http://localhost:8000/api/contacts')
-          .then((response) => {
-            this.contacts = response.data.contacts;
-          })
-          .catch((error) => {
-            console.error('Erro ao buscar contatos:', error);
-          });
-      }
+    filterContacts(category) {
+    if (category === 'Todas') {
+      this.selectedCategory = '';
+    } else {
+      this.selectedCategory = category;
     }
-  };
-  </script>
-  
+  },
+  adicionarContato() {
+    const router = this.$router;
+    if (router) {
+      router.push({ name: 'FormContact' });
+    } else {
+      console.error('Roteador não definido.');
+    }
+  },
+    verDetalhes(contact) {
+      console.log('Ver detalhes de', contact.firstName, contact.lastName);
+    },
+    editarContato(contact) {
+      console.log('Editar contato', contact.firstName, contact.lastName);
+    },
+  },
+  computed: {
+    displayedContacts() {
+      return this.selectedCategory
+        ? this.contacts.filter((contact) => contact.category === this.selectedCategory)
+        : this.contacts;
+    },
+  },
+};
+</script>
+
+<style scoped>
+.category-cell {
+  background-color: #f0f0f0;
+  font-weight: bold;
+  padding: 8px 12px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.custom-primary-button {
+  background-color: #FF9100;
+  color: #fff;
+}
+
+.custom-secondary-button {
+  background-color: #38B6FF;
+  color: #fff;
+}
+</style>

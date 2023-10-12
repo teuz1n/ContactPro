@@ -1,32 +1,35 @@
 <template>
-    <v-app-bar app class="white--text" elevation="2" color="white" dark height="80">
-      <v-img src="../assets/LogoContactPro.svg" max-height="86" ></v-img>
-      <v-spacer></v-spacer>
+  <v-app-bar app class="custom-app-bar" elevation="4" dark color="#1976D2" height="80">
+    <v-container class="d-flex justify-between align-center">
+      <v-img src="@/assets/LogoContactPro2.svg" max-height="70"></v-img>
       <v-btn class="custom-logout-button" @click="logout">
         <v-icon left>mdi-exit-to-app</v-icon> Sair
       </v-btn>
-    </v-app-bar>
-  </template>
-  
-  
-  
-  <script>
-  export default {
-    methods: {
-      logout() {
-      },
+    </v-container>
+  </v-app-bar>
+</template>
+
+<script>
+export default {
+  methods: {
+    logout() {
     },
-  };
-  </script>
+  },
+};
+</script>
 
 <style scoped>
+.custom-app-bar {
+  background: linear-gradient(45deg, #3A9DDB, #3B82F6);
+}
+
 .custom-logout-button {
   background-color: #FF9100;
   color: white;
+  font-weight: bold;
 }
 
 .custom-logout-button:hover {
-  background-color: #FF8000; 
+  background-color: #FF8000;
 }
 </style>
-  
