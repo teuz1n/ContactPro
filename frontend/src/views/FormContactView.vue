@@ -20,6 +20,7 @@
           </v-col>
         </v-row>
       </v-container>
+      <the-footer></the-footer>
     </div>
   </template>
     
@@ -28,10 +29,14 @@
   import { ref } from 'vue';
   import { useRouter } from 'vue-router';
   import TheNavbar from '@/components/TheNavbar.vue';
+  import TheFooter from '@/components/TheFooter.vue';
+
   
   export default {
     components: {
-    'the-navbar': TheNavbar 
+    'the-navbar': TheNavbar,
+    'the-footer': TheFooter
+
   },
     setup() {
       const novoContato = ref({
@@ -70,4 +75,12 @@
     },
   };
   </script>
+
+<style scoped>
+.custom-primary-button {
+  background-color: #FF9100;
+  color: #fff;
+}
+
+</style>
   

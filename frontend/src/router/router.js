@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import ContactListView from '../views/ContactListView.vue'
 import FormContactView from '../views/FormContactView.vue'
+import DetailContactView from '@/views/DetailContactView.vue'
 
 const routes = [
   {
@@ -13,6 +14,11 @@ const routes = [
     name: 'FormContact',
     component: FormContactView
   },
+  {
+    path: '/detail/contact/:id',
+    name: 'DetailContact',
+    component: DetailContactView
+  }
 ]
 
 const router = createRouter({

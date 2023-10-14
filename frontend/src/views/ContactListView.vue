@@ -26,6 +26,7 @@
         <v-col cols="7">
           <v-btn @click="adicionarContato" class="custom-primary-button mr-4">Criar novo contato</v-btn>
           <v-btn @click="exibirRelatorio" class="custom-secondary-button mr-4">Relatório</v-btn>
+          <div v-if="message">{{ message }}</div>
           <v-table>
             <thead>
               <tr>
@@ -44,8 +45,8 @@
                   <v-btn @click="verDetalhes(item)" class="custom-secondary-button mr-4" small>
                     Ver Detalhes
                   </v-btn>
-                  <v-btn @click="editarContato(item)" class="custom-primary-button mr-4" small>
-                    Editar
+                  <v-btn @click="deletarContato(item)" class="custom-primary-button mr-4" small>
+                    Deletar
                   </v-btn>
                 </td>
               </tr>
@@ -54,25 +55,31 @@
         </v-col>
       </v-row>
     </v-container>
+    <the-footer></the-footer>
   </div>
 </template>
 
 
 <script>
 import TheNavbar from '@/components/TheNavbar.vue';
+import TheFooter from '@/components/TheFooter.vue';
+
 import axios from 'axios';
 import { useRouter } from 'vue-router';
 
 
 export default {
   components: {
-    'the-navbar': TheNavbar
+    'the-navbar': TheNavbar,
+    'the-footer': TheFooter
+
   },
   data() {
     return {
       contacts: [],
       categories: [], 
-      selectedCategory: '', 
+      selectedCategory: '',
+      message: ''
     };
   },
   created() {
@@ -108,11 +115,22 @@ export default {
     }
   },
     verDetalhes(contact) {
-      console.log('Ver detalhes de', contact.firstName, contact.lastName);
+      this.$router.push({ name: 'DetailContact', params: { id: contact.id } });
     },
-    editarContato(contact) {
-      console.log('Editar contato', contact.firstName, contact.lastName);
-    },
+    deletarContato(contact) {
+      const contactId = contact.id;
+
+      axios
+        .delete(`http://localhost:8000/api/contacts/${contactId}`)
+        .then(() => {
+          this.contacts = this.contacts.filter((c) => c.id !== contactId);
+          this.message = 'Contato excluído com sucesso!';
+        })
+        .catch((error) => {
+          console.error('Erro ao excluir o contato:', error);
+          this.message = 'Erro ao excluir o contato. Tente novamente mais tarde.'; 
+        });
+    }
   },
   computed: {
     displayedContacts() {
