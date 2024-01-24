@@ -87,7 +87,7 @@ export default {
   },
   methods: {
     fetchContacts() {
-      axios.get('http://localhost:8000/api/contacts')
+      axios.get('http://localhost:4080/api/contacts')
         .then((response) => {
           this.contacts = response.data.contacts;
           this.extractCategories(); 
@@ -121,7 +121,7 @@ export default {
       const contactId = contact.id;
 
       axios
-        .delete(`http://localhost:8000/api/contacts/${contactId}`)
+        .delete(`http://localhost:4080/api/contacts/${contactId}`)
         .then(() => {
           this.contacts = this.contacts.filter((c) => c.id !== contactId);
           this.message = 'Contato excluído com sucesso!';

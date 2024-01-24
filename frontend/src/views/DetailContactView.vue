@@ -81,7 +81,7 @@ export default {
   created() {
     const contactId = this.$route.params.id;
 
-    axios.get(`http://localhost:8000/api/contacts/${contactId}`)
+    axios.get(`http://localhost:4080/api/contacts/${contactId}`)
       .then((response) => {
         this.contact = response.data.contact;
         this.updateEditedData();
@@ -95,7 +95,7 @@ export default {
       if (this.editing) {
         if (this.validateData()) {
           axios
-            .put(`http://localhost:8000/api/contacts/${this.contact.id}`, this.editedData)
+            .put(`http://localhost:4080/api/contacts/${this.contact.id}`, this.editedData)
             .then(() => {
               this.editing = false;
               this.message = 'Contato atualizado com sucesso!';

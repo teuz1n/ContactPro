@@ -8,11 +8,45 @@
               <v-card-title class="text-h5">Novo Contato</v-card-title>
               <v-card-text>
                 <v-form @submit.prevent="criarNovoContato">
-                  <v-text-field v-model="novoContato.nome" label="Nome"></v-text-field>
-                  <v-text-field v-model="novoContato.sobrenome" label="Sobrenome"></v-text-field>
-                  <v-text-field v-model="novoContato.email" label="Email"></v-text-field>
-                  <v-text-field v-model="novoContato.telefone" label="Telefone"></v-text-field>
-                  <v-text-field v-model="novoContato.categoria" label="Categoria"></v-text-field>
+                  <v-text-field 
+                  v-model="novoContato.nome" 
+                  label="Nome" 
+                  :rules="[v => !!v || 'Campo Nome é obrigatório',
+                  v => (v && v.length <= 20) || 'Nome deve ter no máximo 20 caracteres']"
+                  ></v-text-field>
+
+                  <v-text-field 
+                  v-model="novoContato.sobrenome" 
+                  label="Sobrenome (opicional)"
+                  :rules="[v => !v || (v.length <= 20) || 'Sobrenome deve ter no máximo 20 caracteres']"
+                  ></v-text-field>
+
+                  <v-text-field 
+                  v-model="novoContato.email" 
+                  label="Email"
+                  :rules="[
+                    v => !!v || 'Campo Email é obrigatório',
+                    v => /.+@.+/.test(v) || 'Email deve ser válido']"
+                  ></v-text-field>
+
+                  <v-text-field 
+                  v-model="novoContato.telefone" 
+                  label="Telefone"
+                  v-mask="'(##) #####-####'"
+                  :rules="[
+                  v => !!v || 'Campo Telefone é obrigatório',
+                  v => (v.match(/\d/g) || []).length === 11 || 'Telefone deve conter 11 dígitos numéricos'
+                  ]"
+                  ></v-text-field>
+                  
+                  <v-text-field 
+                  v-model="novoContato.categoria" 
+                  label="Categoria"
+                  :rules="[
+                    v => !!v || 'Campo Categoria é obrigatório',
+                    v => (v && v.length <= 50) || 'Categoria deve ter no máximo 50 caracteres'
+                  ]"
+                  ></v-text-field>
                   <v-btn type="submit" class="custom-primary-button mt-4">Criar Contato</v-btn>
                 </v-form>
               </v-card-text>
@@ -37,6 +71,7 @@
     'the-navbar': TheNavbar,
     'the-footer': TheFooter
 
+
   },
     setup() {
       const novoContato = ref({
@@ -58,7 +93,7 @@
           category: novoContato.value.categoria,
         };
   
-        axios.post('http://localhost:8000/api/contacts', data)
+        axios.post('http://localhost:4080/api/contacts', data)
           .then((response) => {
             console.log('Novo Contato criado:', response.data.contact);
             router.push({ name: 'ContactList' });
