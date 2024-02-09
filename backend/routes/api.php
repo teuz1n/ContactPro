@@ -20,12 +20,15 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 
-Route::post('/auth/register', [UserController::class, 'createUser']);
-Route::post('/auth/login', [UserController::class, 'loginUser']);
-Route::post('/auth/logout', [UserController::class, 'logoutUser'])->middleware('auth:sanctum');
+Route::group(['middleware' => 'cors'], function () {
 
-Route::get('/contacts', [ContactsController::class, 'index']);
-Route::post('/contacts', [ContactsController::class, 'store']);
-Route::get('/contacts/{id}', [ContactsController::class, 'show']);
-Route::put('/contacts/{id}', [ContactsController::class, 'update']);
-Route::delete('/contacts/{id}', [ContactsController::class, 'destroy']);
+    Route::post('/auth/register', [UserController::class, 'createUser']);
+    Route::post('/auth/login', [UserController::class, 'loginUser']);
+    Route::post('/auth/logout', [UserController::class, 'logoutUser'])->middleware('auth:sanctum');
+
+    Route::get('/contacts', [ContactsController::class, 'index']);
+    Route::post('/contacts', [ContactsController::class, 'store']);
+    Route::get('/contacts/{id}', [ContactsController::class, 'show']);
+    Route::put('/contacts/{id}', [ContactsController::class, 'update']);
+    Route::delete('/contacts/{id}', [ContactsController::class, 'destroy']);
+});
