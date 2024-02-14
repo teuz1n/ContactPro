@@ -20,8 +20,6 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 
-Route::group(['middleware' => 'cors'], function () {
-
     Route::post('/auth/register', [UserController::class, 'createUser']);
     Route::post('/auth/login', [UserController::class, 'loginUser']);
     Route::post('/auth/logout', [UserController::class, 'logoutUser'])->middleware('auth:sanctum');
@@ -31,4 +29,4 @@ Route::group(['middleware' => 'cors'], function () {
     Route::get('/contacts/{id}', [ContactsController::class, 'show']);
     Route::put('/contacts/{id}', [ContactsController::class, 'update']);
     Route::delete('/contacts/{id}', [ContactsController::class, 'destroy']);
-});
+

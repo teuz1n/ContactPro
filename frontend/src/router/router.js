@@ -3,8 +3,14 @@ import ContactListView from '../views/ContactListView.vue'
 import FormContactView from '../views/FormContactView.vue'
 import DetailContactView from '@/views/DetailContactView.vue'
 import LoginView from '@/views/LoginView.vue'
+import RegisterView from '@/views/RegisterView.vue'
 
 const routes = [
+  {
+    path: '/register',
+    name: 'Register',
+    component: RegisterView
+  },
   {
     path: '/login',
     name: 'Login',

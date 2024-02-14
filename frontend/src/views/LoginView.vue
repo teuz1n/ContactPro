@@ -12,13 +12,14 @@
       </div>
       <button type="submit">Login</button>
       <a class="forgot-password" href="#">Esqueceu a senha?</a>
-      <p class="register">Não possui uma conta? <a class="href" href="#">Criar conta</a></p>
+      <p class="register">Não possui uma conta? <a class="href" href="/register">Criar conta</a></p>
     </form>
   </div>
 </template>
 
 <script>
 import axios from 'axios';
+import router from '@/router/router';
 export default {
   data() {
     return {
@@ -27,35 +28,35 @@ export default {
     };
   },
   methods: {
-    loginUser() {
-      axios
-        .post("http://localhost:4080/auth/login", {
-          email: this.email,
-          password: this.password,
-        })
-      . then((response) => {
-          console.log(response.data);
-          console.log('Usuário fez login com sucesso:', response.data.loginUser);
+  async loginUser() {
+    try {
+      const response = await axios.post("http://localhost:4080/api/auth/login", {
+        email: this.email,
+        password: this.password,
+      });
+      
+      const token = response.data.token;
+     
+      localStorage.setItem('token', token);
+   
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
-      // Configuração de token no cabeçalho das solicitações
-      axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
-
-    router.push({ name: 'ContactList' });
-  })
-  .catch((error) => {
-    console.error('Erro ao fazer login:', error);
-  });
-
-    },
+      
+      this.$router.push({ name: 'ContactList' });
+    } catch (error) {
+      console.error('Erro ao fazer login:', error);
+    }
   },
+},
 };
+
 </script>
 
 <style scoped>
 .login-container {
   max-width: 400px;
   margin: auto;
-  margin-top: 250px;
+  margin-top: 200px;
   padding: 30px;
   border: 1px solid #ddd;
   border-radius: 5px;

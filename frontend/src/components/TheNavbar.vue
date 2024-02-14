@@ -10,9 +10,29 @@
 </template>
 
 <script>
+import axios from 'axios';
+import router from '@/router/router';
+
 export default {
   methods: {
-    logout() {
+    async logout() {
+      try {
+        const token = localStorage.getItem('token');
+
+        await axios.post('http://localhost:4080/api/auth/logout', null, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+
+        localStorage.removeItem('token');
+        
+        delete axios.defaults.headers.common['Authorization'];
+
+        this.$router.push({ name: 'Login' });
+      } catch (error) {
+        console.error('Erro ao fazer logout:', error);
+      }
     },
   },
 };
