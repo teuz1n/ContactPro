@@ -1,25 +1,35 @@
 <template>
-  <div class="login-container">
+  <v-container fluid class="login-container">
     <h2>Login</h2>
-    <form @submit.prevent="loginUser">
-      <div class="form-group">
-        <label for="email">Email:</label>
-        <input type="email" id="email" v-model="email" placeholder="Entrar com email" required />
-      </div>
-      <div class="form-group">
-        <label for="password">Senha:</label>
-        <input type="password" id="password" v-model="password" placeholder="Entrar com senha" required />
-      </div>
-      <button type="submit">Login</button>
+    <v-form @submit.prevent="loginUser">
+      <v-text-field
+        v-model="email"
+        label="Email"
+        placeholder="Entrar com email"
+        :rules="[
+        v => !!v || 'Campo Email é obrigatório',
+        v => /.+@.+/.test(v) || 'Email deve ser válido']"
+      ></v-text-field>
+
+      <v-text-field
+        v-model="password"
+        label="Senha"
+        placeholder="Entrar com senha"
+        type="password"
+        required
+      ></v-text-field>
+
+      <v-btn type="submit" class="custom-login-button" block>Login</v-btn>
       <a class="forgot-password" href="#">Esqueceu a senha?</a>
-      <p class="register">Não possui uma conta? <a class="href" href="/register">Criar conta</a></p>
-    </form>
-  </div>
+      <p class="register">Não possui uma conta? <router-link class="href" to="/register">Criar conta</router-link></p>
+    </v-form>
+  </v-container>
 </template>
 
 <script>
 import axios from 'axios';
 import router from '@/router/router';
+
 export default {
   data() {
     return {
@@ -28,28 +38,27 @@ export default {
     };
   },
   methods: {
-  async loginUser() {
-    try {
-      const response = await axios.post("http://localhost:4080/api/auth/login", {
-        email: this.email,
-        password: this.password,
-      });
-      
-      const token = response.data.token;
+    async loginUser() {
+      try {
+        const response = await axios.post("http://localhost:4080/api/auth/login", {
+          email: this.email,
+          password: this.password,
+        });
+        
+        const token = response.data.token;
+       
+        localStorage.setItem('token', token);
      
-      localStorage.setItem('token', token);
-   
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
-      
-      this.$router.push({ name: 'ContactList' });
-    } catch (error) {
-      console.error('Erro ao fazer login:', error);
-    }
+        
+        this.$router.push({ name: 'ContactList' });
+      } catch (error) {
+        console.error('Erro ao fazer login:', error);
+      }
+    },
   },
-},
 };
-
 </script>
 
 <style scoped>
@@ -71,44 +80,17 @@ h2 {
   margin-bottom: 10px;
 }
 
-form {
-  display: flex;
-  flex-direction: column;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 20px;
-}
-
-label {
-  margin-bottom: 8px;
-  color: #555;
-}
-
-input {
-  padding: 12px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 16px;
-  margin-bottom: 10px;
-}
-
-button {
+.custom-login-button {
   background-color: #38B6FF;
   color: white;
-  padding: 15px;
-  border: none;
   border-radius: 5px;
-  cursor: pointer;
   font-size: 18px;
   font-weight: bold;
   width: 100%;
-  transition: background-color 0.3s;
+  margin-bottom: 5px;
 }
 
-button:hover {
+.custom-login-button:hover {
   background-color: #269add;
 }
 
