@@ -80,30 +80,40 @@ export default {
   },
   created() {
     const contactId = this.$route.params.id;
+    const token = localStorage.getItem('token');
 
-    axios.get(`http://localhost:4080/api/contacts/${contactId}`)
-      .then((response) => {
-        this.contact = response.data.contact;
-        this.updateEditedData();
-      })
-      .catch((error) => {
-        console.error('Erro ao buscar detalhes do contato:', error);
-      });
+    axios.get(`http://localhost:4080/api/contacts/${contactId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
+    .then((response) => {
+      this.contact = response.data.contact;
+      this.updateEditedData();
+    })
+    .catch((error) => {
+      console.error('Erro ao buscar detalhes do contato:', error);
+    });
   },
   methods: {
     editarContato() {
       if (this.editing) {
         if (this.validateData()) {
-          axios
-            .put(`http://localhost:4080/api/contacts/${this.contact.id}`, this.editedData)
-            .then(() => {
-              this.editing = false;
-              this.message = 'Contato atualizado com sucesso!';
-            })
-            .catch((error) => {
-              console.error('Erro ao salvar os dados editados:', error);
-              this.message = 'Erro ao salvar os dados. Tente novamente mais tarde.';
-            });
+          const token = localStorage.getItem('token');
+
+          axios.put(`http://localhost:4080/api/contacts/${this.contact.id}`, this.editedData, {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          })
+          .then(() => {
+            this.editing = false;
+            this.message = 'Contato atualizado com sucesso!';
+          })
+          .catch((error) => {
+            console.error('Erro ao salvar os dados editados:', error);
+            this.message = 'Erro ao salvar os dados. Tente novamente mais tarde.';
+          });
         }
       } else {
         this.editing = true;

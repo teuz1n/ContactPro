@@ -5,32 +5,45 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Contact;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class ContactsController extends Controller
 {
     public function index()
     {
-        $contacts = Contact::all();
-        return response()->json(['contacts' => $contacts]);
+        if (Auth::check()) {
+            $user = Auth::user();
+            $contacts = $user->contacts;
+
+            return response()->json(['contacts' => $contacts]);
+        } else {
+            return response()->json(['message' => 'Unauthenticated'], 401);
+        }
     }
 
     public function store(Request $request)
     {
-        $contact = Contact::create([
-            'firstName' => $request->input('firstName'),
-            'lastName' => $request->input('lastName'),
-            'email' => $request->input('email'),
-            'telephone' => $request->input('telephone'),
-            'category' => $request->input('category')
-        ]);
+        if (Auth::check()) {
+            $user = Auth::user();
+            $contact = $user->contacts()->create([
+                'firstName' => $request->input('firstName'),
+                'lastName' => $request->input('lastName'),
+                'email' => $request->input('email'),
+                'telephone' => $request->input('telephone'),
+                'category' => $request->input('category')
+            ]);
 
-        return response()->json(['message' => 'Contact created successfully', 'contact' => $contact]);
+            return response()->json(['message' => 'Contact created successfully', 'contact' => $contact]);
+        } else {
+            return response()->json(['message' => 'Unauthenticated'], 401);
+        }
     }
 
     public function show($id)
     {
-        $contact = Contact::find($id);
+        $user = Auth::user();
+        $contact = $user->contacts()->find($id);
         if (!$contact) {
             return response()->json(['message' => 'Contact not found'], 404);
         }
@@ -39,11 +52,24 @@ class ContactsController extends Controller
 
     public function update(Request $request, $id)
     {
+        // Verifica se o usuário está autenticado
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json(['message' => 'Unauthenticated'], 401);
+        }
+
+        // Encontra o contato a ser atualizado
         $contact = Contact::find($id);
         if (!$contact) {
             return response()->json(['message' => 'Contact not found'], 404);
         }
 
+        // Verifica se o contato pertence ao usuário autenticado
+        if ($contact->user_id !== $user->id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        // Atualiza o contato
         $contact->update($request->all());
 
         return response()->json(['message' => 'Contact updated successfully', 'contact' => $contact]);
@@ -51,11 +77,24 @@ class ContactsController extends Controller
 
     public function destroy($id)
     {
+        // Verifica se o usuário está autenticado
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json(['message' => 'Unauthenticated'], 401);
+        }
+
+        // Encontra o contato a ser excluído
         $contact = Contact::find($id);
         if (!$contact) {
             return response()->json(['message' => 'Contact not found'], 404);
         }
 
+        // Verifica se o contato pertence ao usuário autenticado
+        if ($contact->user_id !== $user->id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        // Exclui o contato
         $contact->delete();
 
         return response()->json(['message' => 'Contact deleted successfully']);

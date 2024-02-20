@@ -87,7 +87,14 @@ export default {
   },
   methods: {
     fetchContacts() {
-      axios.get('http://localhost:4080/api/contacts')
+      const token = localStorage.getItem('token');
+
+      axios.get('http://localhost:4080/api/contacts', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+          }
+        })
+      
         .then((response) => {
           this.contacts = response.data.contacts;
           this.extractCategories(); 
@@ -118,19 +125,22 @@ export default {
       this.$router.push({ name: 'DetailContact', params: { id: contact.id } });
     },
     deletarContato(contact) {
-      const contactId = contact.id;
+      const token = localStorage.getItem('token');
 
-      axios
-        .delete(`http://localhost:4080/api/contacts/${contactId}`)
+      axios.delete(`http://localhost:4080/api/contacts/${contact.id}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+          }
+        })
         .then(() => {
-          this.contacts = this.contacts.filter((c) => c.id !== contactId);
+          this.contacts = this.contacts.filter((c) => c.id !== contact.id);
           this.message = 'Contato excluído com sucesso!';
         })
         .catch((error) => {
           console.error('Erro ao excluir o contato:', error);
           this.message = 'Erro ao excluir o contato. Tente novamente mais tarde.'; 
-        });
-    }
+});
+}
   },
   computed: {
     displayedContacts() {

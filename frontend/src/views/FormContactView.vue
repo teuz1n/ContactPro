@@ -85,6 +85,8 @@
       const router = useRouter();
   
       const criarNovoContato = () => {
+        const token = localStorage.getItem('token');
+        
         const data = {
           firstName: novoContato.value.nome,
           lastName: novoContato.value.sobrenome,
@@ -93,14 +95,18 @@
           category: novoContato.value.categoria,
         };
   
-        axios.post('http://localhost:4080/api/contacts', data)
-          .then((response) => {
-            console.log('Novo Contato criado:', response.data.contact);
-            router.push({ name: 'ContactList' });
-          })
-          .catch((error) => {
-            console.error('Erro ao criar um novo contato:', error);
-          });
+        axios.post('http://localhost:4080/api/contacts', data, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
+        .then((response) => {
+          console.log('Novo Contato criado:', response.data.contact);
+          router.push({ name: 'ContactList' });
+        })
+        .catch((error) => {
+          console.error('Erro ao criar um novo contato:', error);
+        });
       };
   
       return {
