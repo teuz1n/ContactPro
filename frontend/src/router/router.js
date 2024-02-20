@@ -4,6 +4,7 @@ import FormContactView from '../views/FormContactView.vue'
 import DetailContactView from '@/views/DetailContactView.vue'
 import LoginView from '@/views/LoginView.vue'
 import RegisterView from '@/views/RegisterView.vue'
+import ReportContactView from '@/views/ReportContactView'
 
 const routes = [
   {
@@ -30,6 +31,11 @@ const routes = [
     path: '/detail/contact/:id',
     name: 'DetailContact',
     component: DetailContactView
+  },
+  {
+    path: '/report',
+    name: 'ReportContact',
+    component: ReportContactView
   }
 ]
 

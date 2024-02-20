@@ -30,7 +30,6 @@
           <v-table>
             <thead>
               <tr>
-                <th>Categoria</th>
                 <th>Nome</th>
                 <th>Sobrenome</th>
                 <th>Ações</th>
@@ -38,7 +37,6 @@
             </thead>
             <tbody>
               <tr v-for="(item, index) in displayedContacts" :key="index">
-                <td class="category-cell">{{ item.category }}</td>
                 <td>{{ item.firstName }}</td>
                 <td>{{ item.lastName }}</td>
                 <td>
