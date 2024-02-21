@@ -1,76 +1,235 @@
 <template>
     <div>
-        <the-navbar/>
-        <div style="position: relative; height: 40vh; width: 80vw;">
-            <canvas id="myChart"></canvas>
-        </div>
-        <the-footer/>
+      <the-navbar></the-navbar>
+      <v-container fluid>
+        <v-row>
+          <v-col cols="12" md="6">
+            <v-card class="dashboard-card graph-card">
+              <v-card-title class="dashboard-title">Relatório gerado</v-card-title>
+              <v-card-text>
+                <div class="chart-container">
+                  <canvas id="myChart" class="chart-canvas"></canvas>
+                </div>
+              </v-card-text>
+            </v-card>
+          </v-col>
+          <v-col cols="12" md="6">
+            <v-card class="dashboard-card contact-card">
+              <v-card-title class="dashboard-title">Informações de Contatos</v-card-title>
+              <v-card-text>
+                <div class="contact-info">
+                  <div class="large-card">
+                    <div class="card-header">
+                      <span class="icon"><i class="fas fa-history"></i></span>
+                      <p>Últimos Contatos</p>
+                    </div>
+                    <div class="card-body">
+                      <strong>10</strong>
+                    </div>
+                  </div>
+                  <div class="large-card">
+                    <div class="card-header">
+                      <span class="icon"><i class="fas fa-users"></i></span>
+                      <p>Total de Contatos</p>
+                    </div>
+                    <div class="card-body">
+                      <strong>100</strong>
+                    </div>
+                  </div>
+                  <table class="region-table">
+                    <thead>
+                      <tr>
+                        <th>Região</th>
+                        <th>Contatos</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>Região 1</td>
+                        <td>20</td>
+                      </tr>
+                      <tr>
+                        <td>Região 2</td>
+                        <td>15</td>
+                      </tr>
+                      <tr>
+                        <td>Região 3</td>
+                        <td>30</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-container>
+      <the-footer></the-footer>
     </div>
-</template>
-
-<script>
-import Chart from 'chart.js/auto';
-import TheNavbar from '@/components/TheNavbar.vue';
-import TheFooter from '@/components/TheFooter.vue';
-
-export default {
-  components: {
-    'the-navbar': TheNavbar,
-    'the-footer': TheFooter
-
-  },
-  mounted(){
-
-    const data = {
-        labels: ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho'],
-            datasets:[{
-                label: 'Meus contatos por mês',
-                data: [65, 59, 80, 81, 56, 55, 40],
-                backgroundColor: [ 
-                    'rgba(255, 99, 132, 0.2)',
-                    'rgba(255, 159, 64, 0.2)',
-                    'rgba(255, 205, 86, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(153, 102, 255, 0.2)',
-                    'rgba(201, 203, 207, 0.2)'
-                ],
-                borderColor: [ 
-                    'rgb(255, 99, 132)',
-                    'rgb(255, 159, 64)',
-                    'rgb(255, 205, 86)',
-                    'rgb(75, 192, 192)',
-                    'rgb(54, 162, 235)',
-                    'rgb(153, 102, 255)',
-                    'rgb(201, 203, 207)'
-                ],
-                borderWidth: 1
+  </template>
+  
+  <script>
+  import TheNavbar from '@/components/TheNavbar.vue';
+  import TheFooter from '@/components/TheFooter.vue';
+  
+  import Chart from 'chart.js/auto';
+  
+  export default {
+    components: {
+      'the-navbar': TheNavbar,
+      'the-footer': TheFooter
+    },
+    mounted() {
+      this.generateChart();
+    },
+    methods: {
+      generateChart() {
+        const ctx = document.getElementById('myChart');
+        const myChart = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Outubro', 'Novembro', 'Dezembro'],
+            datasets: [{
+              label: 'Meus contatos por mês',
+              data: [65, 59, 80, 81, 56, 55, 40, 25, 42, 48, 76],
+              fill: true,
+              backgroundColor: 'rgba(220, 220, 220, 0.5)',
+              borderColor: 'rgba(75, 192, 192, 0.8)',
+              pointStyle: 'circle',
+              pointRadius: 5, 
+              tension: 0.1
             }]
-
-    };
-
-    const config = {
-        type: 'line',
-        data: data,
-        options: {
-            scales: { 
-                y: {
-                    beginAtZera: true
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true
+              }
+            },
+            plugins: {
+              legend: {
+                display: true,
+                position: 'top',
+                labels: {
+                  color: '#333',
+                  font: {
+                    size: 14
+                  },
+                  usePointStyle: true, 
+                  padding: 30 
+                },
+                title: {
+                  display: true,
+                  color: '#333',
+                  font: {
+                    size: 16,
+                    weight: 'bold'
+                  }
                 }
+              }
             }
-        },
-
+          }
+        });
+      }
     }
-
-
-
-    const ctx = document.getElementById('myChart');
-    const myChart = new Chart(ctx, config);
-    myChart;
+  };
+  </script>
+  
+  <style scoped>
+  .dashboard-card {
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-top: 20px;
+    transition: all 0.3s ease;
   }
-}
-
-</script>
-
-<style>
-</style>
+  
+  .dashboard-card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .dashboard-title {
+    text-align: center;
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  .chart-container {
+    margin-bottom: 20px;
+  }
+  
+  .contact-info {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .large-card {
+    background-color: #f9f9f9;
+    border-radius: 15px;
+    margin-bottom: 15px;
+    padding: 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+  }
+  
+  .large-card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .card-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  .card-header .icon {
+    margin-right: 10px;
+  }
+  
+  .card-header .icon i {
+    color: #007bff;
+  }
+  
+  .card-body {
+    font-size: 20px;
+    font-weight: bold;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #ccc;
+  }
+  
+  th,
+  td {
+    text-align: left;
+    padding: 8px;
+  }
+  
+  th {
+    background-color: #f2f2f2;
+    color: #333;
+    font-weight: bold;
+  }
+  
+  .graph-card {
+    background-color: #f8f8f8;
+  }
+  
+  .contact-card {
+    background-color: #f5f5f5;
+  }
+  
+  .region-table th {
+    background-color: #007bff;
+    color: #fff;
+  }
+  
+  .chart-canvas {
+    height: 400px; 
+  }
+  </style>
+  
