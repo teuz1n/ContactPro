@@ -30,4 +30,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/contacts/{id}', [ContactsController::class, 'show']);
     Route::put('/contacts/{id}', [ContactsController::class, 'update']);
     Route::delete('/contacts/{id}', [ContactsController::class, 'destroy']);
+    Route::get('/contacts/report', [ContactsController::class, 'relatorioEstatistico']);
 });

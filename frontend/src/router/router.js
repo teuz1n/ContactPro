@@ -33,7 +33,7 @@ const routes = [
     component: DetailContactView
   },
   {
-    path: '/report',
+    path: '/contacts/report',
     name: 'ReportContact',
     component: ReportContactView
   }

@@ -119,6 +119,14 @@ export default {
       console.error('Roteador não definido.');
     }
   },
+  exibirRelatorio() {
+      const router = this.$router;
+      if (router) {
+        router.push({ name: 'ReportContact' });
+      } else {
+        console.error('Roteador não definido.');
+      }
+    },
     verDetalhes(contact) {
       this.$router.push({ name: 'DetailContact', params: { id: contact.id } });
     },

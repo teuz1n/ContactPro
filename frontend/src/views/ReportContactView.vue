@@ -1,77 +1,69 @@
 <template>
-    <div>
-      <the-navbar></the-navbar>
-      <v-container fluid>
-        <v-row>
-          <v-col cols="12" md="6">
-            <v-card class="dashboard-card graph-card">
-              <v-card-title class="dashboard-title">Relatório gerado</v-card-title>
-              <v-card-text>
-                <div class="chart-container">
-                  <canvas id="myChart" class="chart-canvas"></canvas>
-                </div>
-              </v-card-text>
-            </v-card>
-          </v-col>
-          <v-col cols="12" md="6">
-            <v-card class="dashboard-card contact-card">
-              <v-card-title class="dashboard-title">Informações de Contatos</v-card-title>
-              <v-card-text>
-                <div class="contact-info">
-                  <div class="large-card">
-                    <div class="card-header">
-                      <span class="icon"><i class="fas fa-history"></i></span>
-                      <p>Últimos Contatos</p>
-                    </div>
-                    <div class="card-body">
-                      <strong>10</strong>
-                    </div>
+  <div>
+    <the-navbar></the-navbar>
+    <v-container fluid>
+      <v-row>
+        <v-col cols="12" md="6">
+          <v-card class="dashboard-card graph-card">
+            <v-card-title class="dashboard-title">Relatório gerado</v-card-title>
+            <v-card-text>
+              <div class="chart-container">
+                <canvas id="myChart" class="chart-canvas"></canvas>
+              </div>
+            </v-card-text>
+          </v-card>
+        </v-col>
+        <v-col cols="12" md="6">
+          <v-card class="dashboard-card contact-card">
+            <v-card-title class="dashboard-title">Informações de Contatos</v-card-title>
+            <v-card-text>
+              <div class="contact-info">
+                <div class="large-card">
+                  <div class="card-header">
+                    <span class="icon"><i class="fas fa-history"></i></span>
+                    <p>Últimos Contatos</p>
                   </div>
-                  <div class="large-card">
-                    <div class="card-header">
-                      <span class="icon"><i class="fas fa-users"></i></span>
-                      <p>Total de Contatos</p>
-                    </div>
-                    <div class="card-body">
-                      <strong>100</strong>
-                    </div>
+                  <div class="card-body">
+                    <strong>{{ contatos.length }}</strong>
                   </div>
-                  <table class="region-table">
-                    <thead>
-                      <tr>
-                        <th>Região</th>
-                        <th>Contatos</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td>Região 1</td>
-                        <td>20</td>
-                      </tr>
-                      <tr>
-                        <td>Região 2</td>
-                        <td>15</td>
-                      </tr>
-                      <tr>
-                        <td>Região 3</td>
-                        <td>30</td>
-                      </tr>
-                    </tbody>
-                  </table>
                 </div>
-              </v-card-text>
-            </v-card>
-          </v-col>
-        </v-row>
-      </v-container>
-      <the-footer></the-footer>
-    </div>
-  </template>
+                <div class="large-card">
+                  <div class="card-header">
+                    <span class="icon"><i class="fas fa-users"></i></span>
+                    <p>Total de Contatos</p>
+                  </div>
+                  <div class="card-body">
+                    <strong>{{ totalContatos }}</strong>
+                  </div>
+                </div>
+                <table class="region-table">
+                  <thead>
+                    <tr>
+                      <th>Região</th>
+                      <th>Contatos</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="(contato, index) in regioes" :key="index">
+                      <td>{{ contato.regiao }}</td>
+                      <td>{{ contato.contatos }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-container>
+    <the-footer></the-footer>
+  </div>
+</template>
   
   <script>
   import TheNavbar from '@/components/TheNavbar.vue';
   import TheFooter from '@/components/TheFooter.vue';
-  
+  import axios from 'axios';
   import Chart from 'chart.js/auto';
   
   export default {
@@ -79,7 +71,15 @@
       'the-navbar': TheNavbar,
       'the-footer': TheFooter
     },
+    data() {
+      return {
+        totalContatos: 0,
+        contatos: [],
+        regioes: []
+      };
+    },
     mounted() {
+      this.fetchData();
       this.generateChart();
     },
     methods: {
@@ -130,7 +130,30 @@
             }
           }
         });
-      }
+      },
+      fetchData() {
+        const token = localStorage.getItem('token');
+
+        if (token) {
+        axios.get('http://localhost:4080/api/contacts/report', {
+          headers: {
+            'Authorization': `Bearer ${token}` 
+          }
+        })
+        .then(response => {
+          this.totalContatos = response.data.totalContatos;
+          this.contatos = response.data.contatos; 
+          this.regioes = response.data.regioes;
+        })
+        .catch(error => {
+          console.error('Erro ao buscar os dados do relatório: ', error);
+        });
+      } else {
+        console.error('Token de autenticação não encontrado');
+    }
+}
+
+
     }
   };
   </script>
