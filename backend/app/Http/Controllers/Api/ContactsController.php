@@ -154,8 +154,14 @@ class ContactsController extends Controller
             ->groupBy('ddd')
             ->get();
 
+        $regioes = [];
         foreach ($localizacoes as $localizacao) {
             $localizacao->localizacao = $this->mapearDDDParaLocalizacao($localizacao->ddd);
+            $regiao = explode(' - ', $localizacao->localizacao)[1]; // Extrai o nome da região
+            if (!isset($regioes[$regiao])) {
+                $regioes[$regiao] = 0;
+            }
+            $regioes[$regiao] += $localizacao->count;
         }
 
         return view('ReportContactView', compact('totalContatos', 'localizacoes'));
