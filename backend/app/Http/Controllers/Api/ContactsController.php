@@ -52,24 +52,21 @@ class ContactsController extends Controller
 
     public function update(Request $request, $id)
     {
-        // Verifica se o usuário está autenticado
+
         $user = auth()->user();
         if (!$user) {
             return response()->json(['message' => 'Unauthenticated'], 401);
         }
 
-        // Encontra o contato a ser atualizado
         $contact = Contact::find($id);
         if (!$contact) {
             return response()->json(['message' => 'Contact not found'], 404);
         }
 
-        // Verifica se o contato pertence ao usuário autenticado
         if ($contact->user_id !== $user->id) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        // Atualiza o contato
         $contact->update($request->all());
 
         return response()->json(['message' => 'Contact updated successfully', 'contact' => $contact]);
@@ -77,24 +74,21 @@ class ContactsController extends Controller
 
     public function destroy($id)
     {
-        // Verifica se o usuário está autenticado
+
         $user = auth()->user();
         if (!$user) {
             return response()->json(['message' => 'Unauthenticated'], 401);
         }
 
-        // Encontra o contato a ser excluído
         $contact = Contact::find($id);
         if (!$contact) {
             return response()->json(['message' => 'Contact not found'], 404);
         }
 
-        // Verifica se o contato pertence ao usuário autenticado
         if ($contact->user_id !== $user->id) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        // Exclui o contato
         $contact->delete();
 
         return response()->json(['message' => 'Contact deleted successfully']);
@@ -164,7 +158,7 @@ class ContactsController extends Controller
             $localizacao->localizacao = $this->mapearDDDParaLocalizacao($localizacao->ddd);
         }
 
-        return view('relatorio', compact('totalContatos', 'localizacoes'));
+        return view('ReportContactView', compact('totalContatos', 'localizacoes'));
     }
 
     public function showCategoryContacts($category)

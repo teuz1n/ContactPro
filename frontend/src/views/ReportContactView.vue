@@ -1,139 +1,146 @@
 <template>
-    <div>
-      <the-navbar></the-navbar>
-      <v-container fluid>
-        <v-row>
-          <v-col cols="12" md="6">
-            <v-card class="dashboard-card graph-card">
-              <v-card-title class="dashboard-title">Relatório gerado</v-card-title>
-              <v-card-text>
-                <div class="chart-container">
-                  <canvas id="myChart" class="chart-canvas"></canvas>
-                </div>
-              </v-card-text>
-            </v-card>
-          </v-col>
-          <v-col cols="12" md="6">
-            <v-card class="dashboard-card contact-card">
-              <v-card-title class="dashboard-title">Informações de Contatos</v-card-title>
-              <v-card-text>
-                <div class="contact-info">
-                  <div class="large-card">
-                    <div class="card-header">
-                      <span class="icon"><i class="fas fa-history"></i></span>
-                      <p>Últimos Contatos</p>
-                    </div>
-                    <div class="card-body">
-                      <strong>10</strong>
-                    </div>
+  <div>
+    <the-navbar></the-navbar>
+    <v-container fluid>
+      <v-row>
+        <v-col cols="12" md="6">
+          <v-card class="dashboard-card graph-card">
+            <v-card-title class="dashboard-title">Relatório gerado</v-card-title>
+            <v-card-text>
+              <div class="chart-container">
+                <canvas id="myChart" class="chart-canvas"></canvas>
+              </div>
+            </v-card-text>
+          </v-card>
+        </v-col>
+        <v-col cols="12" md="6">
+          <v-card class="dashboard-card contact-card">
+            <v-card-title class="dashboard-title">Informações de Contatos</v-card-title>
+            <v-card-text>
+              <div class="contact-info">
+                <div class="large-card">
+                  <div class="card-header">
+                    <span class="icon"><i class="fas fa-history"></i></span>
+                    <p>Últimos Contatos</p>
                   </div>
-                  <div class="large-card">
-                    <div class="card-header">
-                      <span class="icon"><i class="fas fa-users"></i></span>
-                      <p>Total de Contatos</p>
-                    </div>
-                    <div class="card-body">
-                      <strong>100</strong>
-                    </div>
+                  <div class="card-body">
+                    <strong>{{ totalContatos }}</strong>
                   </div>
-                  <table class="region-table">
-                    <thead>
-                      <tr>
-                        <th>Região</th>
-                        <th>Contatos</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td>Região 1</td>
-                        <td>20</td>
-                      </tr>
-                      <tr>
-                        <td>Região 2</td>
-                        <td>15</td>
-                      </tr>
-                      <tr>
-                        <td>Região 3</td>
-                        <td>30</td>
-                      </tr>
-                    </tbody>
-                  </table>
                 </div>
-              </v-card-text>
-            </v-card>
-          </v-col>
-        </v-row>
-      </v-container>
-      <the-footer></the-footer>
-    </div>
-  </template>
-  
-  <script>
-  import TheNavbar from '@/components/TheNavbar.vue';
-  import TheFooter from '@/components/TheFooter.vue';
-  
-  import Chart from 'chart.js/auto';
-  
-  export default {
-    components: {
-      'the-navbar': TheNavbar,
-      'the-footer': TheFooter
+                <div class="large-card">
+                  <div class="card-header">
+                    <span class="icon"><i class="fas fa-users"></i></span>
+                    <p>Total de Contatos</p>
+                  </div>
+                  <div class="card-body">
+                    <strong>{{ totalContatos }}</strong>
+                  </div>
+                </div>
+                <table class="region-table">
+                  <thead>
+                    <tr>
+                      <th>Região</th>
+                      <th>Contatos</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="(localizacao, index) in localizacoes" :key="index">
+                      <td>{{ localizacao.regiao }}</td>
+                      <td>{{ localizacao.contatos }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-container>
+    <the-footer></the-footer>
+  </div>
+</template>
+
+<script>
+import TheNavbar from '@/components/TheNavbar.vue';
+import TheFooter from '@/components/TheFooter.vue';
+import axios from 'axios';
+import Chart from 'chart.js/auto';
+
+export default {
+  components: {
+    'the-navbar': TheNavbar,
+    'the-footer': TheFooter
+  },
+  data() {
+    return {
+      totalContatos: 0,
+      localizacoes: []
+    };
+  },
+  mounted() {
+    this.fetchRelatorioEstatistico();
+    this.generateChart();
+  },
+  methods: {
+    fetchRelatorioEstatistico() {
+      const token = localStorage.getItem('token');
+      const config = { headers: { 'Authorization': `Bearer ${token}` } };
+
+      axios.get('http://localhost:4080/api/report', config)
+        .then(response => {
+          this.totalContatos = response.data.totalContatos;
+          this.localizacoes = response.data.localizacoes;
+        })
+        .catch(error => {
+          console.error('Erro ao obter relatório:', error);
+        });
     },
-    mounted() {
-      this.generateChart();
-    },
-    methods: {
-      generateChart() {
-        const ctx = document.getElementById('myChart');
-        const myChart = new Chart(ctx, {
-          type: 'line',
-          data: {
-            labels: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Outubro', 'Novembro', 'Dezembro'],
-            datasets: [{
-              label: 'Meus contatos por mês',
-              data: [65, 59, 80, 81, 56, 55, 40, 25, 42, 48, 76],
-              fill: true,
-              backgroundColor: 'rgba(220, 220, 220, 0.5)',
-              borderColor: 'rgba(75, 192, 192, 0.8)',
-              pointStyle: 'circle',
-              pointRadius: 5, 
-              tension: 0.1
-            }]
+    generateChart() {
+      const ctx = document.getElementById('myChart');
+      const myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Outubro', 'Novembro', 'Dezembro'],
+          datasets: [{
+            label: 'Meus contatos por mês',
+            data: [65, 59, 80, 81, 56, 55, 40, 25, 42, 48, 76],
+            fill: true,
+            backgroundColor: 'rgba(220, 220, 220, 0.5)',
+            borderColor: 'rgba(75, 192, 192, 0.8)',
+            pointStyle: 'circle',
+            pointRadius: 5, 
+            tension: 0.1
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true
+            }
           },
-          options: {
-            scales: {
-              y: {
-                beginAtZero: true
-              }
-            },
-            plugins: {
-              legend: {
+          plugins: {
+            legend: {
+              display: true,
+              position: 'top',
+              labels: {
+                color: '#333',
+                font: { size: 14 },
+                usePointStyle: true, 
+                padding: 30 
+              },
+              title: {
                 display: true,
-                position: 'top',
-                labels: {
-                  color: '#333',
-                  font: {
-                    size: 14
-                  },
-                  usePointStyle: true, 
-                  padding: 30 
-                },
-                title: {
-                  display: true,
-                  color: '#333',
-                  font: {
-                    size: 16,
-                    weight: 'bold'
-                  }
-                }
+                color: '#333',
+                font: { size: 16, weight: 'bold' }
               }
             }
           }
-        });
-      }
+        }
+      });
     }
-  };
-  </script>
+  }
+};
+</script>
   
   <style scoped>
   .dashboard-card {
