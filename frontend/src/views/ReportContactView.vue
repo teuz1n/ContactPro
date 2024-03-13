@@ -45,8 +45,8 @@
                   </thead>
                   <tbody>
                     <tr v-for="(localizacao, index) in localizacoes" :key="index">
-                      <td>{{ localizacao.regiao }}</td>
-                      <td>{{ localizacao.contatos }}</td>
+                      <td>{{ localizacao.localizacao }}</td>
+                      <td>{{ localizacao.count }} contatos</td>
                     </tr>
                   </tbody>
                 </table>
@@ -74,7 +74,8 @@ export default {
   data() {
     return {
       totalContatos: 0,
-      localizacoes: []
+      localizacoes: [],
+      regioes: [],
     };
   },
   mounted() {
@@ -90,6 +91,7 @@ export default {
         .then(response => {
           this.totalContatos = response.data.totalContatos;
           this.localizacoes = response.data.localizacoes;
+          this.regioes = response.data.regioes;
         })
         .catch(error => {
           console.error('Erro ao obter relatório:', error);
@@ -214,6 +216,7 @@ export default {
   td {
     text-align: left;
     padding: 8px;
+    color: #333
   }
   
   th {

@@ -157,14 +157,18 @@ class ContactsController extends Controller
         $regioes = [];
         foreach ($localizacoes as $localizacao) {
             $localizacao->localizacao = $this->mapearDDDParaLocalizacao($localizacao->ddd);
-            $regiao = explode(' - ', $localizacao->localizacao)[1]; // Extrai o nome da região
+            $regiao = explode(' - ', $localizacao->localizacao)[1];
             if (!isset($regioes[$regiao])) {
                 $regioes[$regiao] = 0;
             }
             $regioes[$regiao] += $localizacao->count;
         }
 
-        return view('ReportContactView', compact('totalContatos', 'localizacoes'));
+        return response()->json([
+            'totalContatos' => $totalContatos,
+            'localizacoes' => $localizacoes,
+            'regioes' => $regioes,
+        ]);
     }
 
     public function showCategoryContacts($category)
