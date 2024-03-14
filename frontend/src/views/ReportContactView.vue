@@ -21,10 +21,10 @@
                 <div class="large-card">
                   <div class="card-header">
                     <span class="icon"><i class="fas fa-history"></i></span>
-                    <p>Últimos Contatos</p>
+                    <p>Últimos Contatos Adicionados</p>
                   </div>
                   <div class="card-body">
-                    <strong>{{ totalContatos }}</strong>
+                    <strong>{{ totalContatosUltimas12Horas }}</strong>
                   </div>
                 </div>
                 <div class="large-card">
@@ -39,14 +39,16 @@
                 <table class="region-table">
                   <thead>
                     <tr>
+                      <th>Estado</th>
                       <th>Região</th>
                       <th>Contatos</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="(localizacao, index) in localizacoes" :key="index">
-                      <td>{{ localizacao.localizacao }}</td>
-                      <td>{{ localizacao.count }} contatos</td>
+                    <tr v-for="(estado, index) in estados" :key="index">
+                      <td>{{ estado.estado }}</td>
+                      <td>{{ estado.regiao }}</td>
+                      <td>{{ estado.contatos }} contato{{ estado.contatos > 1 ? 's' : '' }}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -73,9 +75,10 @@ export default {
   },
   data() {
     return {
+      totalContatosUltimas12Horas: 0,
       totalContatos: 0,
       localizacoes: [],
-      regioes: [],
+      estados: [],
     };
   },
   mounted() {
@@ -90,8 +93,24 @@ export default {
       axios.get('http://localhost:4080/api/report', config)
         .then(response => {
           this.totalContatos = response.data.totalContatos;
+          this.totalContatosUltimas12Horas = response.data.totalContatosUltimas12Horas; 
           this.localizacoes = response.data.localizacoes;
-          this.regioes = response.data.regioes;
+
+           // Agrupando os contatos pelo estado
+          const estadosAgrupados = {};
+          this.localizacoes.forEach(localizacao => {
+            const estado = localizacao.localizacao.split(' - ')[0];
+            const regiao = localizacao.localizacao.split(' - ')[1];
+            if (!estadosAgrupados[estado]) {
+              estadosAgrupados[estado] = {
+                estado: estado,
+                regiao: regiao,
+                contatos: 0
+              };
+            }
+            estadosAgrupados[estado].contatos += localizacao.count;
+          });
+          this.estados = Object.values(estadosAgrupados);
         })
         .catch(error => {
           console.error('Erro ao obter relatório:', error);

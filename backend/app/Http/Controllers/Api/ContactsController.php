@@ -149,11 +149,23 @@ class ContactsController extends Controller
 
     public function relatorioEstatistico()
     {
+        $now = now();
+    
+        $dozeHorasAtras = $now->subHours(12);
+    
         $totalContatos = Contact::count();
+    
+        $ultimoContatoAdd = Contact::orderBy('created_at', 'desc')->first()->created_at;
+        if ($ultimoContatoAdd->lt($dozeHorasAtras)) {
+            $totalContatosUltimas12Horas = 0;
+        } else {
+            $totalContatosUltimas12Horas = Contact::where('created_at', '>=', $dozeHorasAtras)->count();
+        }
+    
         $localizacoes = Contact::select(DB::raw('SUBSTRING_INDEX(SUBSTRING_INDEX(telephone, ")", 1), "(", -1) as ddd'), DB::raw('COUNT(*) as count'))
             ->groupBy('ddd')
             ->get();
-
+    
         $regioes = [];
         foreach ($localizacoes as $localizacao) {
             $localizacao->localizacao = $this->mapearDDDParaLocalizacao($localizacao->ddd);
@@ -163,17 +175,12 @@ class ContactsController extends Controller
             }
             $regioes[$regiao] += $localizacao->count;
         }
-
+    
         return response()->json([
             'totalContatos' => $totalContatos,
+            'totalContatosUltimas12Horas' => $totalContatosUltimas12Horas,
             'localizacoes' => $localizacoes,
             'regioes' => $regioes,
         ]);
-    }
-
-    public function showCategoryContacts($category)
-    {
-        $contacts = Contact::where('category', $category)->get();
-        return view('category_contacts', ['contacts' => $contacts, 'category' => $category]);
     }
 }
