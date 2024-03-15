@@ -7,8 +7,9 @@
         label="Email"
         placeholder="Entrar com email"
         :rules="[
-        v => !!v || 'Campo Email é obrigatório',
-        v => /.+@.+/.test(v) || 'Email deve ser válido']"
+          (v) => !!v || 'Campo Email é obrigatório',
+          (v) => /.+@.+/.test(v) || 'Email deve ser válido',
+        ]"
       ></v-text-field>
 
       <v-text-field
@@ -21,14 +22,17 @@
 
       <v-btn type="submit" class="custom-login-button" block>Login</v-btn>
       <a class="forgot-password" href="#">Esqueceu a senha?</a>
-      <p class="register">Não possui uma conta? <router-link class="href" to="/register">Criar conta</router-link></p>
+      <p class="register">
+        Não possui uma conta?
+        <router-link class="href" to="/register">Criar conta</router-link>
+      </p>
     </v-form>
   </v-container>
 </template>
 
 <script>
-import axios from 'axios';
-import router from '@/router/router';
+import axios from "axios";
+import router from "@/router/router";
 
 export default {
   data() {
@@ -40,21 +44,23 @@ export default {
   methods: {
     async loginUser() {
       try {
-        const response = await axios.post("http://localhost:4080/api/auth/login", {
-          email: this.email,
-          password: this.password,
-        });
-        
-        const token = response.data.token;
-       
-        localStorage.setItem('token', token);
-     
-        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        const response = await axios.post(
+          "http://localhost:4080/api/auth/login",
+          {
+            email: this.email,
+            password: this.password,
+          }
+        );
 
-        
-        this.$router.push({ name: 'ContactList' });
+        const token = response.data.token;
+
+        localStorage.setItem("token", token);
+
+        axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
+        this.$router.push({ name: "ContactList" });
       } catch (error) {
-        console.error('Erro ao fazer login:', error);
+        console.error("Erro ao fazer login:", error);
       }
     },
   },
@@ -81,7 +87,7 @@ h2 {
 }
 
 .custom-login-button {
-  background-color: #38B6FF;
+  background-color: #38b6ff;
   color: white;
   border-radius: 5px;
   font-size: 18px;
@@ -103,7 +109,7 @@ h2 {
   text-decoration: none;
   font-size: 1rem;
   font-weight: bold;
-  color: #FF9100;
+  color: #ff9100;
 }
 
 .forgot-password {

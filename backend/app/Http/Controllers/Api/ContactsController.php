@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Contact;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -149,23 +150,40 @@ class ContactsController extends Controller
 
     public function relatorioEstatistico()
     {
+        $user = Auth::user();
+
         $now = now();
-    
         $dozeHorasAtras = $now->subHours(12);
-    
-        $totalContatos = Contact::count();
-    
-        $ultimoContatoAdd = Contact::orderBy('created_at', 'desc')->first()->created_at;
+
+        $totalContatos = Contact::where('user_id', $user->id)->count();
+
+        $ultimoContatoAdd = Contact::where('user_id', $user->id)->orderBy('created_at', 'desc')->first()->created_at;
         if ($ultimoContatoAdd->lt($dozeHorasAtras)) {
             $totalContatosUltimas12Horas = 0;
         } else {
-            $totalContatosUltimas12Horas = Contact::where('created_at', '>=', $dozeHorasAtras)->count();
+            $totalContatosUltimas12Horas = Contact::where('user_id', $user->id)->where('created_at', '>=', $dozeHorasAtras)->count();
         }
-    
-        $localizacoes = Contact::select(DB::raw('SUBSTRING_INDEX(SUBSTRING_INDEX(telephone, ")", 1), "(", -1) as ddd'), DB::raw('COUNT(*) as count'))
-            ->groupBy('ddd')
-            ->get();
-    
+
+
+        $contatosPorMes = Contact::select(DB::raw('YEAR(created_at) as year, MONTH(created_at) as month, COUNT(*) as contacts'))
+            ->where('user_id', $user->id)
+            ->groupBy(DB::raw('YEAR(created_at)'), DB::raw('MONTH(created_at)'))
+            ->get()
+            ->map(function ($item) {
+                $monthNumber = $item->month;
+                $monthName = Carbon::create()->month($monthNumber)->locale('pt_BR')->monthName;
+                $item->month = $monthName;
+                return $item;
+            });
+
+
+        if ($totalContatos > 0) {
+            $localizacoes = Contact::where('user_id', $user->id)
+                ->select(DB::raw('SUBSTRING_INDEX(SUBSTRING_INDEX(telephone, ")", 1), "(", -1) as ddd'), DB::raw('COUNT(*) as count'))
+                ->groupBy('ddd')
+                ->get();
+        }
+
         $regioes = [];
         foreach ($localizacoes as $localizacao) {
             $localizacao->localizacao = $this->mapearDDDParaLocalizacao($localizacao->ddd);
@@ -175,11 +193,12 @@ class ContactsController extends Controller
             }
             $regioes[$regiao] += $localizacao->count;
         }
-    
+
         return response()->json([
             'totalContatos' => $totalContatos,
             'totalContatosUltimas12Horas' => $totalContatosUltimas12Horas,
             'localizacoes' => $localizacoes,
+            'contatosPorMes' => $contatosPorMes,
             'regioes' => $regioes,
         ]);
     }

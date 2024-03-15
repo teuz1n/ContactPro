@@ -8,8 +8,12 @@
             v-model="name"
             label="Nome"
             placeholder="Insira seu nome"
-            :rules="[v => !!v || 'Campo Nome é obrigatório',
-                  v => (v && v.length <= 20) || 'Nome deve ter no máximo 20 caracteres']"
+            :rules="[
+              (v) => !!v || 'Campo Nome é obrigatório',
+              (v) =>
+                (v && v.length <= 20) ||
+                'Nome deve ter no máximo 20 caracteres',
+            ]"
           ></v-text-field>
         </v-col>
       </v-row>
@@ -20,8 +24,9 @@
             label="Email"
             placeholder="Insira seu email"
             :rules="[
-            v => !!v || 'Campo Email é obrigatório',
-            v => /.+@.+/.test(v) || 'Email deve ser válido']"
+              (v) => !!v || 'Campo Email é obrigatório',
+              (v) => /.+@.+/.test(v) || 'Email deve ser válido',
+            ]"
           ></v-text-field>
         </v-col>
       </v-row>
@@ -36,15 +41,17 @@
           ></v-text-field>
         </v-col>
       </v-row>
-      <v-btn type="submit" class="custom-register-button" block>Registrar</v-btn>
+      <v-btn type="submit" class="custom-register-button" block
+        >Registrar</v-btn
+      >
     </v-form>
     <p class="login">Já possui uma conta? <a href="/login">Login</a></p>
   </v-container>
 </template>
 
 <script>
-import axios from 'axios';
-import router from '@/router/router';
+import axios from "axios";
+import router from "@/router/router";
 
 export default {
   data() {
@@ -57,18 +64,24 @@ export default {
   methods: {
     async registerUser() {
       try {
-        const response = await axios.post("http://localhost:4080/api/auth/register", {
-          name: this.name,
-          email: this.email,
-          password: this.password
-        });
-        
-        console.log(response.data);
-        console.log('Usuário registrado com sucesso:', response.data.registeredUser);
+        const response = await axios.post(
+          "http://localhost:4080/api/auth/register",
+          {
+            name: this.name,
+            email: this.email,
+            password: this.password,
+          }
+        );
 
-        router.push({ name: 'Login' });
+        console.log(response.data);
+        console.log(
+          "Usuário registrado com sucesso:",
+          response.data.registeredUser
+        );
+
+        router.push({ name: "Login" });
       } catch (error) {
-        console.error('Erro ao registrar usuário:', error);
+        console.error("Erro ao registrar usuário:", error);
       }
     },
   },
@@ -100,13 +113,13 @@ h2 {
 }
 
 .login a {
-  color: #FF9100;
+  color: #ff9100;
   text-decoration: none;
   font-weight: bold;
 }
 
 .custom-register-button {
-  background-color: #38B6FF;
+  background-color: #38b6ff;
   color: white;
   border-radius: 5px;
   font-size: 18px;
