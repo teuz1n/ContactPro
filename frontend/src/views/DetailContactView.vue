@@ -1,73 +1,103 @@
 <template>
   <div>
     <the-navbar></the-navbar>
-    <v-container fluid>
-      <v-row>
-        <v-col cols="12">
+    <v-container>
+      <v-row justify="center">
+        <v-col cols="12" md="8">
           <v-card class="elevation-2">
-            <v-card-title class="text-h5"> Detalhes do Contato: </v-card-title>
+            <v-card-title class="text-h5">Detalhes do Contato:</v-card-title>
             <v-card-text>
-              <div class="contact-details">
-                <div class="detail" v-if="!editing">
-                  <span><strong>Nome:</strong> {{ contact.firstName }}</span>
-                </div>
-                <div class="detail" v-if="!editing">
-                  <span
-                    ><strong>Sobrenome:</strong> {{ contact.lastName }}</span
-                  >
-                </div>
-                <div class="detail" v-if="!editing">
-                  <span><strong>Email:</strong> {{ contact.email }}</span>
-                </div>
-                <div class="detail" v-if="!editing">
-                  <span
-                    ><strong>Telefone:</strong> {{ contact.telephone }}</span
-                  >
-                </div>
-                <div class="detail" v-if="!editing">
-                  <span
-                    ><strong>Categoria:</strong> {{ contact.category }}</span
-                  >
-                </div>
-                <div v-if="editing || !contact.id">
-                  <div class="detail edit-mode">
-                    <span
-                      ><strong>Nome:</strong>
-                      <input v-model="editedData.firstName" v-if="editing"
-                    /></span>
-                  </div>
-                  <div class="detail edit-mode">
-                    <span
-                      ><strong>Sobrenome:</strong>
-                      <input v-model="editedData.lastName" v-if="editing"
-                    /></span>
-                  </div>
-                  <div class="detail edit-mode">
-                    <span
-                      ><strong>Email:</strong>
-                      <input v-model="editedData.email" v-if="editing"
-                    /></span>
-                  </div>
-                  <div class="detail edit-mode">
-                    <span
-                      ><strong>Telefone:</strong>
-                      <input v-model="editedData.telephone" v-if="editing"
-                    /></span>
-                  </div>
-                  <div class="detail edit-mode">
-                    <span
-                      ><strong>Categoria:</strong>
-                      <input v-model="editedData.category" v-if="editing"
-                    /></span>
-                  </div>
-                </div>
-              </div>
+              <v-form v-if="!editing" class="contact-details">
+                <v-row>
+                  <v-col cols="12" md="6">
+                    <v-text-field
+                      label="Nome"
+                      v-model="contact.firstName"
+                      readonly
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="12" md="6">
+                    <v-text-field
+                      label="Sobrenome"
+                      v-model="contact.lastName"
+                      readonly
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="12" md="6">
+                    <v-text-field
+                      label="Email"
+                      v-model="contact.email"
+                      readonly
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="12" md="6">
+                    <v-text-field
+                      label="Telefone"
+                      v-model="contact.telephone"
+                      readonly
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="12">
+                    <v-text-field
+                      label="Categoria"
+                      v-model="contact.category"
+                      readonly
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
+              </v-form>
+              <v-form v-else>
+                <v-row>
+                  <v-col cols="12" md="6">
+                    <v-text-field
+                      label="Nome"
+                      v-model="editedData.firstName"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="12" md="6">
+                    <v-text-field
+                      label="Sobrenome"
+                      v-model="editedData.lastName"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="12" md="6">
+                    <v-text-field
+                      label="Email"
+                      v-model="editedData.email"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="12" md="6">
+                    <v-text-field
+                      label="Telefone"
+                      v-model="editedData.telephone"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="12">
+                    <v-text-field
+                      label="Categoria"
+                      v-model="editedData.category"
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
+              </v-form>
             </v-card-text>
+            <v-card-actions>
+              <v-btn @click="editarContato" class="custom-primary-button">{{
+                editing ? "Salvar" : "Editar"
+              }}</v-btn>
+            </v-card-actions>
+            <v-alert v-if="message" :value="message" type="success" dismissible>
+              {{ message }}
+            </v-alert>
+            <v-alert
+              v-if="errorMessage"
+              :value="errorMessage"
+              type="error"
+              dismissible
+            >
+              {{ errorMessage }}
+            </v-alert>
           </v-card>
-          <v-btn @click="editarContato" class="custom-primary-button">{{
-            editing ? "Salvar" : "Editar"
-          }}</v-btn>
-          <div v-if="message">{{ message }}</div>
         </v-col>
       </v-row>
     </v-container>
@@ -97,27 +127,31 @@ export default {
         category: "",
       },
       message: "",
+      errorMessage: "",
     };
   },
   created() {
-    const contactId = this.$route.params.id;
-    const token = localStorage.getItem("token");
-
-    axios
-      .get(`http://localhost:4080/api/contacts/${contactId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((response) => {
-        this.contact = response.data.contact;
-        this.updateEditedData();
-      })
-      .catch((error) => {
-        console.error("Erro ao buscar detalhes do contato:", error);
-      });
+    this.fetchContactDetails();
   },
   methods: {
+    fetchContactDetails() {
+      const contactId = this.$route.params.id;
+      const token = localStorage.getItem("token");
+
+      axios
+        .get(`http://localhost:4080/api/contacts/${contactId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((response) => {
+          this.contact = response.data.contact;
+          this.updateEditedData();
+        })
+        .catch((error) => {
+          console.error("Erro ao buscar detalhes do contato:", error);
+        });
+    },
     editarContato() {
       if (this.editing) {
         if (this.validateData()) {
@@ -136,10 +170,11 @@ export default {
             .then(() => {
               this.editing = false;
               this.message = "Contato atualizado com sucesso!";
+              this.fetchContactDetails(); // Atualizar os detalhes do contato após salvar
             })
             .catch((error) => {
               console.error("Erro ao salvar os dados editados:", error);
-              this.message =
+              this.errorMessage =
                 "Erro ao salvar os dados. Tente novamente mais tarde.";
             });
         }
@@ -148,13 +183,7 @@ export default {
       }
     },
     updateEditedData() {
-      this.editedData = {
-        firstName: this.contact.firstName,
-        lastName: this.contact.lastName,
-        email: this.contact.email,
-        telephone: this.contact.telephone,
-        category: this.contact.category,
-      };
+      this.editedData = { ...this.contact };
     },
     validateData() {
       if (
@@ -164,7 +193,7 @@ export default {
       ) {
         return true;
       } else {
-        this.message = "Preencha todos os campos obrigatórios.";
+        this.errorMessage = "Preencha todos os campos obrigatórios.";
         return false;
       }
     },
@@ -173,29 +202,22 @@ export default {
 </script>
 
 <style scoped>
-.contact-details {
-  display: flex;
-  flex-direction: column;
-}
-
-.detail {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 10px;
-}
-
 .custom-primary-button {
   background-color: #ff9100;
   color: #fff;
-  padding: 10px 20px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   margin-top: 20px;
 }
 
-.edit-mode {
-  background-color: #f0f0f0;
-  padding: 5px;
+.contact-details {
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+}
+
+.v-alert {
+  margin-top: 20px;
 }
 </style>

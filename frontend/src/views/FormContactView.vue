@@ -64,6 +64,25 @@
                 <v-btn type="submit" class="custom-primary-button mt-4"
                   >Criar Contato</v-btn
                 >
+                <div style="margin-top: 10px">
+                  <!-- Espaçamento adicional -->
+                  <v-alert
+                    v-if="message"
+                    :value="message"
+                    type="success"
+                    dismissible
+                  >
+                    {{ message }}
+                  </v-alert>
+                  <v-alert
+                    v-if="errorMessage"
+                    :value="errorMessage"
+                    type="error"
+                    dismissible
+                  >
+                    {{ errorMessage }}
+                  </v-alert>
+                </div>
               </v-form>
             </v-card-text>
           </v-card>
@@ -97,6 +116,9 @@ export default {
 
     const router = useRouter();
 
+    const message = ref("");
+    const errorMessage = ref("");
+
     const criarNovoContato = () => {
       const token = localStorage.getItem("token");
 
@@ -116,16 +138,21 @@ export default {
         })
         .then((response) => {
           console.log("Novo Contato criado:", response.data.contact);
+          message.value = "Contato criado com sucesso!";
           router.push({ name: "ContactList" });
         })
         .catch((error) => {
           console.error("Erro ao criar um novo contato:", error);
+          errorMessage.value =
+            "Erro ao criar um novo contato. Tente novamente mais tarde.";
         });
     };
 
     return {
       novoContato,
       criarNovoContato,
+      message,
+      errorMessage,
     };
   },
 };

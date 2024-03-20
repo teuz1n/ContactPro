@@ -1,65 +1,80 @@
 <template>
-  <div>
+  <div class="contacts-container">
     <the-navbar></the-navbar>
     <v-container fluid>
       <v-row>
-        <v-col cols="3">
-          <v-card class="elevation-2">
+        <v-col cols="12" md="4" lg="3">
+          <v-card class="categories-card elevation-2">
             <v-card-title class="text-h5"> Categorias </v-card-title>
             <v-list>
-              <v-list-item @click="filterContacts('Todas')">
-                <v-list-item-title>Todas</v-list-item-title>
-              </v-list-item>
-              <v-divider></v-divider>
               <v-list-item
                 v-for="(category, index) in categories"
                 :key="index"
                 @click="filterContacts(category)"
+                :class="{ 'category-cell': selectedCategory === category }"
               >
                 <v-list-item-title>{{ category }}</v-list-item-title>
               </v-list-item>
             </v-list>
           </v-card>
         </v-col>
-        <v-col cols="7">
-          <v-btn @click="adicionarContato" class="custom-primary-button mr-4"
-            >Criar novo contato</v-btn
+        <v-col cols="12" md="8" lg="9">
+          <v-row align="center" class="mb-4">
+            <v-col cols="12" md="auto" class="mb-2">
+              <v-btn @click="adicionarContato" class="custom-primary-button"
+                >Criar novo contato</v-btn
+              >
+            </v-col>
+            <v-col cols="12" md="auto" class="mb-2">
+              <v-btn @click="exibirRelatorio" class="custom-secondary-button"
+                >Relatório</v-btn
+              >
+            </v-col>
+          </v-row>
+          <div v-if="message" class="mb-4">{{ message }}</div>
+          <v-simple-table
+            v-if="displayedContacts.length"
+            class="contacts-table"
           >
-          <v-btn @click="exibirRelatorio" class="custom-secondary-button mr-4"
-            >Relatório</v-btn
-          >
-          <div v-if="message">{{ message }}</div>
-          <v-table>
-            <thead>
-              <tr>
-                <th>Nome</th>
-                <th>Sobrenome</th>
-                <th>Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(item, index) in displayedContacts" :key="index">
-                <td>{{ item.firstName }}</td>
-                <td>{{ item.lastName }}</td>
-                <td>
-                  <v-btn
-                    @click="verDetalhes(item)"
-                    class="custom-secondary-button mr-4"
-                    small
-                  >
-                    Ver Detalhes
-                  </v-btn>
-                  <v-btn
-                    @click="deletarContato(item)"
-                    class="custom-primary-button mr-4"
-                    small
-                  >
-                    Deletar
-                  </v-btn>
-                </td>
-              </tr>
-            </tbody>
-          </v-table>
+            <template v-slot:default>
+              <thead>
+                <tr>
+                  <th style="width: 40%">Nome</th>
+                  <th style="width: 40%">Sobrenome</th>
+                  <th style="width: 20%">Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(item, index) in displayedContacts" :key="index">
+                  <td>{{ item.firstName }}</td>
+                  <td>{{ item.lastName }}</td>
+                  <td>
+                    <v-row align="center" justify="center">
+                      <v-col cols="auto">
+                        <v-btn
+                          @click="verDetalhes(item)"
+                          class="ver-detalhes-button"
+                          icon
+                        >
+                          <v-icon>mdi-eye</v-icon>
+                        </v-btn>
+                      </v-col>
+                      <v-col cols="auto">
+                        <v-btn
+                          @click="deletarContato(item)"
+                          class="deletar-button"
+                          icon
+                        >
+                          <v-icon>mdi-delete</v-icon>
+                        </v-btn>
+                      </v-col>
+                    </v-row>
+                  </td>
+                </tr>
+              </tbody>
+            </template>
+          </v-simple-table>
+          <div v-else>Nenhum contato disponível.</div>
         </v-col>
       </v-row>
     </v-container>
@@ -93,14 +108,12 @@ export default {
   methods: {
     fetchContacts() {
       const token = localStorage.getItem("token");
-
       axios
         .get("http://localhost:4080/api/contacts", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         })
-
         .then((response) => {
           this.contacts = response.data.contacts;
           this.extractCategories();
@@ -115,11 +128,7 @@ export default {
       ];
     },
     filterContacts(category) {
-      if (category === "Todas") {
-        this.selectedCategory = "";
-      } else {
-        this.selectedCategory = category;
-      }
+      this.selectedCategory = category;
     },
     adicionarContato() {
       const router = this.$router;
@@ -137,7 +146,6 @@ export default {
     },
     deletarContato(contact) {
       const token = localStorage.getItem("token");
-
       axios
         .delete(`http://localhost:4080/api/contacts/${contact.id}`, {
           headers: {
@@ -168,6 +176,16 @@ export default {
 </script>
 
 <style scoped>
+.contacts-container {
+  background-color: #f9f9f9;
+  padding: 20px;
+}
+
+.categories-card {
+  background-color: #fff;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
 .category-cell {
   background-color: #f0f0f0;
   font-weight: bold;
@@ -184,5 +202,56 @@ export default {
 .custom-secondary-button {
   background-color: #38b6ff;
   color: #fff;
+}
+
+.ver-detalhes-button {
+  background-color: #38b6ff !important;
+  color: #fff;
+}
+
+.deletar-button {
+  background-color: #ff4f4f !important;
+  color: #fff;
+}
+
+.contacts-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.contacts-table th,
+.contacts-table td {
+  border: 1px solid #dee2e6;
+  padding: 8px;
+}
+
+.contacts-table th {
+  background-color: #f8f9fa;
+  font-weight: bold;
+}
+
+.contacts-table td {
+  text-align: center;
+}
+
+@media screen and (min-width: 475px) {
+  .contacts-table {
+    font-size: 16px;
+  }
+
+  .contacts-table th,
+  .contacts-table td {
+    font-size: 18px;
+  }
+
+  .contacts-table th:first-child,
+  .contacts-table td:first-child {
+    text-align: left;
+  }
+
+  .contacts-table th:nth-child(2),
+  .contacts-table td:nth-child(2) {
+    text-align: left;
+  }
 }
 </style>
