@@ -78,6 +78,12 @@
         </v-col>
       </v-row>
     </v-container>
+    <v-pagination
+        v-model="pagination.page"
+        :length="pagination.totalPages"
+        :total-visible="5"
+         @input="fetchContacts"
+    ></v-pagination>
     <the-footer></the-footer>
   </div>
 </template>
@@ -100,6 +106,11 @@ export default {
       categories: [],
       selectedCategory: "",
       message: "",
+      pagination: {
+        page: 1,
+        totalPages: 0,
+        itemsPerPage: 5,
+      },
     };
   },
   created() {
@@ -117,18 +128,22 @@ export default {
         .then((response) => {
           this.contacts = response.data.contacts;
           this.extractCategories();
+          this.pagination.totalPages = Math.ceil(this.contacts.length / this.pagination.itemsPerPage);
         })
         .catch((error) => {
           console.error("Erro ao buscar contatos:", error);
         });
     },
     extractCategories() {
-      this.categories = [
-        ...new Set(this.contacts.map((contact) => contact.category)),
-      ];
+      this.categories = ["Todas", ...new Set(this.contacts.map((contact) => contact.category))];
     },
     filterContacts(category) {
       this.selectedCategory = category;
+      if (category === "Todas") {
+        this.displayedContacts = this.contacts;
+      } else {
+        this.displayedContacts = this.contacts.filter(contact => contact.category === category);
+      }
     },
     adicionarContato() {
       const router = this.$router;
@@ -165,11 +180,13 @@ export default {
   },
   computed: {
     displayedContacts() {
+      const start = (this.pagination.page - 1) * this.pagination.itemsPerPage;
+      const end = start + this.pagination.itemsPerPage;
       return this.selectedCategory
         ? this.contacts.filter(
             (contact) => contact.category === this.selectedCategory
-          )
-        : this.contacts;
+          ).slice(start, end)
+        : this.contacts.slice(start, end);
     },
   },
 };
@@ -179,11 +196,13 @@ export default {
 .contacts-container {
   background-color: #f9f9f9;
   padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .categories-card {
   background-color: #fff;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease;
 }
 
 .category-cell {
