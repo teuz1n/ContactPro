@@ -230,6 +230,7 @@ export default {
 .custom-secondary-button {
   background-color: #38b6ff;
   color: #fff;
+  border-radius: 10px;
 }
 
 .ver-detalhes-button {
