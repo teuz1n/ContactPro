@@ -162,5 +162,6 @@ export default {
 .custom-primary-button {
   background-color: #ff9100;
   color: #fff;
+  border-radius: 10px;
 }
 </style>

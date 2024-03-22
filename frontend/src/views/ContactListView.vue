@@ -79,10 +79,10 @@
       </v-row>
     </v-container>
     <v-pagination
-        v-model="pagination.page"
-        :length="pagination.totalPages"
-        :total-visible="5"
-         @input="fetchContacts"
+      v-model="pagination.page"
+      :length="pagination.totalPages"
+      :total-visible="5"
+      @input="fetchContacts"
     ></v-pagination>
     <the-footer></the-footer>
   </div>
@@ -127,22 +127,30 @@ export default {
         })
         .then((response) => {
           this.contacts = response.data.contacts;
+          this.pagination.totalPages = Math.ceil(
+            this.contacts.length / this.pagination.itemsPerPage
+          );
           this.extractCategories();
-          this.pagination.totalPages = Math.ceil(this.contacts.length / this.pagination.itemsPerPage);
+          this.displayedContacts = this.contacts;
         })
         .catch((error) => {
           console.error("Erro ao buscar contatos:", error);
         });
     },
     extractCategories() {
-      this.categories = ["Todas", ...new Set(this.contacts.map((contact) => contact.category))];
+      this.categories = [
+        "Todas",
+        ...new Set(this.contacts.map((contact) => contact.category)),
+      ];
     },
     filterContacts(category) {
       this.selectedCategory = category;
       if (category === "Todas") {
         this.displayedContacts = this.contacts;
       } else {
-        this.displayedContacts = this.contacts.filter(contact => contact.category === category);
+        this.displayedContacts = this.contacts.filter(
+          (contact) => contact.category === category
+        );
       }
     },
     adicionarContato() {
@@ -183,9 +191,9 @@ export default {
       const start = (this.pagination.page - 1) * this.pagination.itemsPerPage;
       const end = start + this.pagination.itemsPerPage;
       return this.selectedCategory
-        ? this.contacts.filter(
-            (contact) => contact.category === this.selectedCategory
-          ).slice(start, end)
+        ? this.contacts
+            .filter((contact) => contact.category === this.selectedCategory)
+            .slice(start, end)
         : this.contacts.slice(start, end);
     },
   },
@@ -216,6 +224,7 @@ export default {
 .custom-primary-button {
   background-color: #ff9100;
   color: #fff;
+  border-radius: 10px;
 }
 
 .custom-secondary-button {

@@ -47,7 +47,10 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="(estado, index) in estados" :key="index">
+                    <tr
+                      v-for="(estado, index) in estadosPaginados"
+                      :key="index"
+                    >
                       <td>{{ estado.estado }}</td>
                       <td>{{ estado.regiao }}</td>
                       <td>
@@ -58,6 +61,12 @@
                     </tr>
                   </tbody>
                 </table>
+                <v-pagination
+                  v-model="pagination.page"
+                  :length="pagination.totalPages"
+                  :total-visible="5"
+                  @input="fetchRelatorioEstatistico"
+                ></v-pagination>
               </div>
             </v-card-text>
           </v-card>
@@ -85,11 +94,23 @@ export default {
       totalContatos: 0,
       localizacoes: [],
       estados: [],
+      estadosPaginados: [],
       contatosPorMes: [],
+      pagination: {
+        page: 1,
+        totalPages: 0,
+        itemsPerPage: 5,
+      },
     };
   },
   mounted() {
     this.fetchRelatorioEstatistico();
+  },
+  watch: {
+    "pagination.page": {
+      handler: "fetchRelatorioEstatistico",
+      immediate: false,
+    },
   },
   methods: {
     fetchRelatorioEstatistico() {
@@ -105,7 +126,6 @@ export default {
           this.localizacoes = response.data.localizacoes;
           this.contatosPorMes = response.data.contatosPorMes;
 
-          // Agrupando os contatos pelo estado
           const estadosAgrupados = {};
           this.localizacoes.forEach((localizacao) => {
             const estado = localizacao.localizacao.split(" - ")[0];
@@ -120,6 +140,13 @@ export default {
             estadosAgrupados[estado].contatos += localizacao.count;
           });
           this.estados = Object.values(estadosAgrupados);
+
+          this.pagination.totalPages = Math.ceil(
+            this.estados.length / this.pagination.itemsPerPage
+          );
+
+          this.paginarEstados();
+
           this.generateChart();
         })
         .catch((error) => {
@@ -225,6 +252,11 @@ export default {
           },
         },
       });
+    },
+    paginarEstados() {
+      const start = (this.pagination.page - 1) * this.pagination.itemsPerPage;
+      const end = start + this.pagination.itemsPerPage;
+      this.estadosPaginados = this.estados.slice(start, end);
     },
   },
 };

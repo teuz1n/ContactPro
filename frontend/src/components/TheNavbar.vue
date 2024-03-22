@@ -1,6 +1,6 @@
 <template>
-  <v-app-bar app class="custom-app-bar" elevation="4" dark color="#1976D2" height="80">
-    <v-container class="d-flex justify-between align-center">
+  <v-app-bar app class="custom-app-bar" elevation="4" dark height="80">
+    <v-container class="d-flex justify-space-between align-center">
       <v-img src="@/assets/LogoContactPro2.svg" max-height="70"></v-img>
       <v-btn class="custom-logout-button" @click="logout">
         <v-icon left>mdi-exit-to-app</v-icon> Sair
@@ -8,30 +8,28 @@
     </v-container>
   </v-app-bar>
 </template>
-
 <script>
-import axios from 'axios';
-import router from '@/router/router';
+import axios from "axios";
 
 export default {
   methods: {
     async logout() {
       try {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem("token");
 
-        await axios.post('http://localhost:4080/api/auth/logout', null, {
+        await axios.post("http://localhost:4080/api/auth/logout", null, {
           headers: {
-            Authorization: `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         });
 
-        localStorage.removeItem('token');
-        
-        delete axios.defaults.headers.common['Authorization'];
+        localStorage.removeItem("token");
 
-        this.$router.push({ name: 'Login' });
+        delete axios.defaults.headers.common["Authorization"];
+
+        this.$router.push({ name: "Login" });
       } catch (error) {
-        console.error('Erro ao fazer logout:', error);
+        console.error("Erro ao fazer logout:", error);
       }
     },
   },
@@ -40,16 +38,20 @@ export default {
 
 <style scoped>
 .custom-app-bar {
-  background: linear-gradient(45deg, #3A9DDB, #3B82F6);
+  background: linear-gradient(to right, #007bff, #48a7ff);
+  padding: 0;
 }
 
 .custom-logout-button {
-  background-color: #FF9100;
+  background-color: #ff9100;
   color: white;
   font-weight: bold;
+  border-radius: 10px;
+  padding: 10px 20px;
+  transition: background-color 0.3s;
 }
 
 .custom-logout-button:hover {
-  background-color: #FF8000;
+  background-color: #ff8000;
 }
 </style>

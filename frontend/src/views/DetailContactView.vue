@@ -206,7 +206,7 @@ export default {
   background-color: #ff9100;
   color: #fff;
   border: none;
-  border-radius: 4px;
+  border-radius: 10px;
   cursor: pointer;
   margin-top: 20px;
 }
