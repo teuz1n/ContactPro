@@ -32,7 +32,8 @@
             </v-col>
           </v-row>
           <div v-if="message" class="mb-4">{{ message }}</div>
-          <v-simple-table
+          <v-container
+          fluid
             v-if="displayedContacts.length"
             class="contacts-table"
           >
@@ -73,7 +74,7 @@
                 </tr>
               </tbody>
             </template>
-          </v-simple-table>
+          </v-container>
           <div v-else>Nenhum contato disponível.</div>
         </v-col>
       </v-row>
@@ -131,7 +132,6 @@ export default {
             this.contacts.length / this.pagination.itemsPerPage
           );
           this.extractCategories();
-          this.displayedContacts = this.contacts;
         })
         .catch((error) => {
           console.error("Erro ao buscar contatos:", error);
@@ -139,19 +139,12 @@ export default {
     },
     extractCategories() {
       this.categories = [
-        "Todas",
+      "Todas",
         ...new Set(this.contacts.map((contact) => contact.category)),
       ];
     },
     filterContacts(category) {
       this.selectedCategory = category;
-      if (category === "Todas") {
-        this.displayedContacts = this.contacts;
-      } else {
-        this.displayedContacts = this.contacts.filter(
-          (contact) => contact.category === category
-        );
-      }
     },
     adicionarContato() {
       const router = this.$router;
@@ -190,7 +183,9 @@ export default {
     displayedContacts() {
       const start = (this.pagination.page - 1) * this.pagination.itemsPerPage;
       const end = start + this.pagination.itemsPerPage;
-      return this.selectedCategory
+
+
+      return this.selectedCategory && this.selectedCategory != "Todas"
         ? this.contacts
             .filter((contact) => contact.category === this.selectedCategory)
             .slice(start, end)

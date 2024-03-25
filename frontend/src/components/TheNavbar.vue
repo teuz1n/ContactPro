@@ -1,11 +1,13 @@
 <template>
   <v-app-bar app class="custom-app-bar" elevation="4" dark height="80">
-    <v-container class="d-flex justify-space-between align-center">
-      <v-img src="@/assets/LogoContactPro2.svg" max-height="70"></v-img>
+    <template #prepend>
+      <v-img class="imageLogo" src="@/assets/LogoContactPro2.svg" max-height="80" min-width="256px"></v-img>
+    </template>
+    <template #append>
       <v-btn class="custom-logout-button" @click="logout">
         <v-icon left>mdi-exit-to-app</v-icon> Sair
       </v-btn>
-    </v-container>
+    </template>
   </v-app-bar>
 </template>
 <script>
@@ -39,7 +41,7 @@ export default {
 <style scoped>
 .custom-app-bar {
   background: linear-gradient(to right, #007bff, #48a7ff);
-  padding: 0;
+  padding: 0 60px;
 }
 
 .custom-logout-button {
