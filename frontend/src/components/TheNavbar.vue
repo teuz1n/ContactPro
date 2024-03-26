@@ -1,19 +1,27 @@
 <template>
   <v-app-bar app class="custom-app-bar" elevation="4" dark height="80">
-    <template #prepend>
-      <v-img class="imageLogo" src="@/assets/LogoContactPro2.svg" max-height="80" min-width="256px"></v-img>
-    </template>
-    <template #append>
-      <v-btn class="custom-logout-button" @click="logout">
-        <v-icon left>mdi-exit-to-app</v-icon> Sair
-      </v-btn>
-    </template>
+    <v-img
+      class="imageLogo"
+      src="@/assets/LogoContactPro2.svg"
+      max-height="64"
+      min-width="192px"
+    ></v-img>
+    <v-spacer></v-spacer>
+    <v-btn class="custom-logout-button" @click="logout">
+      <v-icon left>mdi-exit-to-app</v-icon> Sair
+    </v-btn>
   </v-app-bar>
 </template>
+
 <script>
 import axios from "axios";
 
 export default {
+  data() {
+    return {
+      drawer: false,
+    };
+  },
   methods: {
     async logout() {
       try {
@@ -41,7 +49,7 @@ export default {
 <style scoped>
 .custom-app-bar {
   background: linear-gradient(to right, #007bff, #48a7ff);
-  padding: 0 60px;
+  padding: 0 24px;
 }
 
 .custom-logout-button {
@@ -49,11 +57,26 @@ export default {
   color: white;
   font-weight: bold;
   border-radius: 10px;
-  padding: 10px 20px;
+  padding: 10px 16px;
   transition: background-color 0.3s;
 }
 
 .custom-logout-button:hover {
   background-color: #ff8000;
+}
+
+.menu-button {
+  margin-left: 8px;
+}
+
+@media only screen and (max-width: 375px) {
+  .custom-app-bar {
+    padding: 0 8px;
+  }
+
+  .custom-logout-button {
+    padding: 10px;
+    font-size: 12px;
+  }
 }
 </style>

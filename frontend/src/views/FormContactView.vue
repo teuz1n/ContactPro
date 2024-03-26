@@ -120,6 +120,11 @@ export default {
     const errorMessage = ref("");
 
     const criarNovoContato = () => {
+      if (!/.+@.+\..+/.test(novoContato.value.email)) {
+        errorMessage.value = "O email inserido não é válido.";
+        return;
+      }
+
       const token = localStorage.getItem("token");
 
       const data = {

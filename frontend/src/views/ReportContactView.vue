@@ -156,102 +156,108 @@ export default {
     generateChart() {
       const ctx = document.getElementById("myChart");
 
-      if (Chart.instances.length > 0) {
-        Chart.instances[0].destroy();
+      if (!this.chartInstance) {
+        this.chartInstance = new Chart(ctx, {
+          type: "line",
+          data: {
+            labels: this.contatosPorMes.map((entry) => entry.month),
+            datasets: [
+              {
+                label: "Contatos no mês",
+                data: this.contatosPorMes.map((entry) => entry.contacts),
+                fill: true,
+                backgroundColor: "rgba(255, 86, 0, 0.2)",
+                borderColor: "#38B6FF",
+                borderWidth: 3,
+                pointBackgroundColor: "#38B6FF",
+                pointBorderColor: "#fff",
+                pointBorderWidth: 4,
+                pointRadius: 6,
+                pointHoverRadius: 8,
+                tension: 0.2,
+                spanGaps: true,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: {
+                display: true,
+                position: "top",
+                labels: {
+                  color: "#333",
+                  font: { size: 18 },
+                  usePointStyle: true,
+                  padding: 30,
+                  boxWidth: 0,
+                },
+              },
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                title: {
+                  display: true,
+                  text: "Número de Contatos",
+                  font: {
+                    size: 18,
+                    weight: "bold",
+                  },
+                },
+                ticks: {
+                  stepSize: 1,
+                  font: {
+                    size: 14,
+                  },
+                },
+                grid: {
+                  display: false,
+                },
+                maxTicksLimit: 10,
+              },
+              x: {
+                title: {
+                  display: true,
+                  text: "Meses",
+                  font: {
+                    size: 18,
+                    weight: "bold",
+                  },
+                },
+                ticks: {
+                  font: {
+                    size: 14,
+                  },
+                },
+                grid: {
+                  display: false,
+                },
+              },
+            },
+            layout: {
+              padding: {
+                top: 50,
+                bottom: 30,
+              },
+            },
+            elements: {
+              line: {
+                capBezierPoints: false,
+                tension: 0,
+              },
+            },
+          },
+        });
+      } else {
+        this.chartInstance.data.labels = this.contatosPorMes.map(
+          (entry) => entry.month
+        );
+        this.chartInstance.data.datasets[0].data = this.contatosPorMes.map(
+          (entry) => entry.contacts
+        );
+        this.chartInstance.update();
       }
-
-      new Chart(ctx, {
-        type: "line",
-        data: {
-          labels: this.contatosPorMes.map((entry) => entry.month),
-          datasets: [
-            {
-              label: "Contatos no mês",
-              data: this.contatosPorMes.map((entry) => entry.contacts),
-              fill: true,
-              backgroundColor: "rgba(255, 86, 0, 0.2)",
-              borderColor: "#38B6FF",
-              borderWidth: 3,
-              pointBackgroundColor: "#38B6FF",
-              pointBorderColor: "#fff",
-              pointBorderWidth: 4,
-              pointRadius: 6,
-              pointHoverRadius: 8,
-              tension: 0.2,
-              spanGaps: true,
-            },
-          ],
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: {
-              display: true,
-              position: "top",
-              labels: {
-                color: "#333",
-                font: { size: 18 },
-                usePointStyle: true,
-                padding: 30,
-                boxWidth: 0,
-              },
-            },
-          },
-          scales: {
-            y: {
-              beginAtZero: true,
-              title: {
-                display: true,
-                text: "Número de Contatos",
-                font: {
-                  size: 18,
-                  weight: "bold",
-                },
-              },
-              ticks: {
-                stepSize: 1,
-                font: {
-                  size: 14,
-                },
-              },
-              grid: {
-                display: false,
-              },
-              maxTicksLimit: 10,
-            },
-            x: {
-              title: {
-                display: true,
-                text: "Meses",
-                font: {
-                  size: 18,
-                  weight: "bold",
-                },
-              },
-              ticks: {
-                font: {
-                  size: 14,
-                },
-              },
-              grid: {
-                display: false,
-              },
-            },
-          },
-          layout: {
-            padding: {
-              top: 50,
-              bottom: 30,
-            },
-          },
-          elements: {
-            line: {
-              capBezierPoints: false,
-              tension: 0,
-            },
-          },
-        },
-      });
     },
     paginarEstados() {
       const start = (this.pagination.page - 1) * this.pagination.itemsPerPage;
