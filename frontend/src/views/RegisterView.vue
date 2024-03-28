@@ -36,6 +36,7 @@
             v-model="password"
             label="Senha"
             placeholder="Insira sua senha"
+            :rules="[(v) => !!v || 'Campo Senha é obrigatório']"
             type="password"
             required
           ></v-text-field>
